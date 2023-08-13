@@ -1,0 +1,65 @@
+body {
+font-family: 'Courier New', 'Times New Roman', Times, serif;
+font-size: 16px;
+margin: 2em;
+color: #333;
+line-height: 1.6;
+background-color: #f8f8f8;
+}
+h1, h2 { color: #444; margin-top: 0; margin-bottom: 0.5em; }
+a { color: #0077cc; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.tab { padding: 0.5em 0; max-width: 800px; margin: 0 auto; }
+#nav {
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    padding: 0;
+    list-style: none;
+    background-color: #f2f2f2;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    margin-left: 0px;
+}
+#nav li {
+    display: inline-block;
+    text-align: center;
+    margin-right: 5px; /* Added to separate the links */
+}
+#profile-image {
+    width: 150px; /* Adjust size as needed */
+    border-radius: 50%; /* Creates the circular effect */
+    display: block; /* Helps centering */
+    margin: 0 auto; /* Centers the image */
+}
+#about-container {
+    display: flex; /* Uses Flexbox for layout */
+    align-items: center; /* Centers items vertically */
+}
+
+#profile-image {
+    width: 150px; /* Adjust size as needed */
+    border-radius: 50%; /* Creates the circular effect */
+    margin-right: 20px; /* Adds space between image and text */
+}
+
+#about-text {
+    flex-grow: 1; /* Allows the text to take up the remaining space */
+}
+@media screen and (max-width: 600px) {
+body {
+    font-size: 14px;
+}
+
+#about-container {
+    flex-direction: column;
+    align-items: center; /* Updated to center */
+}
+
+#profile-image {
+    margin-right: 0;
+    margin-bottom: 20px;
+    display: block; /* Ensures the image is a block-level element */
+    margin-left: auto; /* Centers the image */
+    margin-right: auto;
+}}

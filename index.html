@@ -5,69 +5,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Personal Website</title>
-    <style>
-        body {
-        font-family: 'Courier New', 'Times New Roman', Times, serif;
-        font-size: 16px;
-        margin: 2em;
-        color: #333;
-        line-height: 1.6;
-        background-color: #f8f8f8;
+    <link rel="stylesheet" href="style.css">
+    <script>
+        window.onload = function() {
+            fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('navbar-container').innerHTML = data);
         }
-        h1, h2 { color: #444; margin-top: 0; margin-bottom: 0.5em; }
-        a { color: #0077cc; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .tab { padding: 0.5em 0; max-width: 800px; margin: 0 auto; }
-        #nav {
-            width: 100%;
-            display: inline-block;
-            text-align: center;
-            padding: 0;
-            list-style: none;
-            background-color: #f2f2f2;
-            border-bottom: 1px solid #ccc;
-            border-top: 1px solid #ccc;
-            margin-left: 0px;
-        }
-        #nav li {
-            display: inline-block;
-            text-align: center;
-            margin-right: 5px; /* Added to separate the links */
-        }
-        #profile-image {
-            width: 150px; /* Adjust size as needed */
-            border-radius: 50%; /* Creates the circular effect */
-            display: block; /* Helps centering */
-            margin: 0 auto; /* Centers the image */
-        }
-        #about-container {
-            display: flex; /* Uses Flexbox for layout */
-            align-items: center; /* Centers items vertically */
-        }
-
-        #profile-image {
-            width: 150px; /* Adjust size as needed */
-            border-radius: 50%; /* Creates the circular effect */
-            margin-right: 20px; /* Adds space between image and text */
-        }
-        
-        #about-text {
-            flex-grow: 1; /* Allows the text to take up the remaining space */
-        }
-    </style>
+    </script>
 </head>
 <body>
-    <nav id="nav">
-        <ul>
-            <li><a href="#about">About Me</a></li>|
-            <li><a href="#projects">Projects</a></li>|
-            <li><a href="#publications">Publications</a></li>|
-            <li><a href="#posts">Posts</a></li>|
-            <li><a href="https://github.com/CYHSM">GitHub</a></li>|
-            <li><a href="https://twitter.com/CYHSM">Twitter</a></li>|
-            <li><a href="https://scholar.google.de/citations?&user=BR3NilQAAAAJ">Scholar</a></li>
-        </ul>
-    </nav>
+    <div id="navbar-container"></div>
 
     <section class="tab" id="about">
         <h1>About Me</h1>
@@ -88,25 +36,18 @@
     </section>
     
 
-    <section class="tab" id="projects">
-        <h2>Projects</h2>
-        <p>Project 1: Description...</p>
-        <p>Project 2: Description...</p>
-        <!-- Add more projects as needed -->
-    </section>
-
     <section class="tab" id="publications">
         <h2>Publications</h2>
         <p><a href="publications/frey_curbio_2023.pdf" target="_blank"><strong>NeuroAI: If grid cells are the answer, is path integration the question?</strong></a><br>
-            M Frey, MW Mathis, A Mathis<br>
-            Current Biology 33 (5), R190-R192 | Year: 2023</p>
+        M Frey, MW Mathis, A Mathis<br>
+        Current Biology 33 (5), R190-R192 | Year: 2023</p>
 
         <p><a href="publications/frey_natneuro_2021.pdf" target="_blank"><strong>Magnetic resonance-based eye tracking using deep neural networks</strong></a><br>
         M Frey, M Nau, CF Doeller<br>
         Nature neuroscience 24 (12), 1772-1779 | Year: 2021</p>
     
         <p><a href="publications/frey_elife_2021.pdf" target="_blank"><strong>Interpreting wide-band neural activity using convolutional neural networks</strong></a><br>
-        M Frey, S Tanni, C Perrodin, A O'Leary, M Nau, J Kelly, A Banino, ...<br>
+        M Frey, S Tanni, C Perrodin, A O'Leary, M Nau, J Kelly, A Banino, D Bendor, J Lefort, CF Doeller, C Barry<br>
         Elife 10, e66551 | Year: 2021</p>
     
         <p><a href="publications/nau_encoding_2020.pdf" target="_blank"><strong>Behavior-dependent directional tuning in the human visual-navigation network</strong></a><br>
@@ -115,7 +56,7 @@
     
         <p><a href="publications/frey_tumorseg_2019.pdf" target="_blank"><strong>Memory efficient brain tumor segmentation using an autoencoder-regularized u-net</strong></a><br>
         M Frey, M Nau<br>
-        Brain lesion: Glioma, Multiple Sclerosis, Stroke and Traumatic Brain Injuries... | Year: 2020</p>
+        Brain lesion: MICCAI | Year: 2020</p>
     
         <p><a href="publications/coletta_jneuro_2018.pdf" target="_blank"><strong>Testing the efficacy of single-cell stimulation in biasing presubicular head direction activity</strong></a><br>
         S Coletta, M Frey, K Nasr, P Preston-Ferrer, A Burgalossi<br>
@@ -134,18 +75,22 @@
         Current Biology 26 (4), 536-541 | Year: 2016</p>
     
         <p><a href="publications/schwenker_svm_2014.pdf" target="_blank"><strong>A new multi-class fuzzy support vector machine algorithm</strong></a><br>
-        F Schwenker, M Frey, M Glodek, M Kächele, S Meudt, M Schels, ...<br>
-        Artificial Neural Networks in Pattern Recognition: 6th IAPR TC 3 … | Year: 2014</p>
+        F Schwenker, M Frey, M Glodek, M Kächele, S Meudt, M Schels, M Schmidt<br>
+        Artificial Neural Networks in Pattern Recognition | Year: 2014</p>
     </section>
     
+    <section class="tab" id="projects">
+        <h2>Projects</h2>
+        <p><strong><a href="https://github.com/CYHSM/awesome-neuro-ai-papers">Awesome NeuroAI</a></strong><br>
+            A curated list of Papers & Reviews from the intersection of deep learning and neuroscience. 
+            <br>
+         </p>
+    </section>
     
     <section class="tab" id="posts">
         <h2>Posts</h2>
-        <!-- Assuming you use Markdown or similar for posts -->
-        <p>Post 1: <a href="URL_HERE">Title Here</a> <span style="color: #888;">(Date here)</span></p>
-        <p>Post 2: <a href="URL_HERE">Title Here</a> <span style="color: #888;">(Date here)</span></p>
-        <!-- Add more posts as needed -->
-    </section>
+        <p><a href="/posts/prayn_clip.html">Spatially selective cells in CLIP</a> <span style="color: #888;">(26.08.23)</span></p>
+        </section>
     
     <!-- <div class="footer">
         <a href="https://github.com/YOUR_GITHUB_USERNAME">GitHub</a> | <a href="https://twitter.com/YOUR_TWITTER_HANDLE">Twitter</a>
