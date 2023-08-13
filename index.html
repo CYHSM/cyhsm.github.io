@@ -2,84 +2,153 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markus Frey</title>
+    <title>Your Personal Website</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f4f4f4;
+        font-family: 'Courier New', 'Times New Roman', Times, serif;
+        font-size: 16px;
+        margin: 2em;
+        color: #333;
+        line-height: 1.6;
+        background-color: #f8f8f8;
         }
-        .navbar {
-            background: #333;
-            overflow: hidden;
-            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
-        }
-        .navbar a {
-            float: left;
-            display: block;
-            color: white;
+        h1, h2 { color: #444; margin-top: 0; margin-bottom: 0.5em; }
+        a { color: #0077cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .tab { padding: 0.5em 0; max-width: 800px; margin: 0 auto; }
+        #nav {
+            width: 100%;
+            display: inline-block;
             text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            transition: all 0.3s ease;
+            padding: 0;
+            list-style: none;
+            background-color: #f2f2f2;
+            border-bottom: 1px solid #ccc;
+            border-top: 1px solid #ccc;
+            margin-left: 0px;
         }
-        .navbar a:hover {
-            background-color: #555;
-            color: white;
+        #nav li {
+            display: inline-block;
+            text-align: center;
+            margin-right: 5px; /* Added to separate the links */
         }
-        .content {
-            padding: 20px;
-            background: white;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        #profile-image {
+            width: 150px; /* Adjust size as needed */
+            border-radius: 50%; /* Creates the circular effect */
+            display: block; /* Helps centering */
+            margin: 0 auto; /* Centers the image */
         }
-        .tab-content {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        #about-container {
+            display: flex; /* Uses Flexbox for layout */
+            align-items: center; /* Centers items vertically */
         }
-        .tab-content.active {
-            display: block;
-            opacity: 1;
+
+        #profile-image {
+            width: 150px; /* Adjust size as needed */
+            border-radius: 50%; /* Creates the circular effect */
+            margin-right: 20px; /* Adds space between image and text */
         }
-        @media screen and (max-width: 600px) {
-            .navbar a {
-                float: none;
-                display: block;
-                text-align: left;
-                padding: 10px;
-            }
-            .content {
-                padding: 10px;
-            }
+        
+        #about-text {
+            flex-grow: 1; /* Allows the text to take up the remaining space */
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="javascript:void(0);" onclick="showTab('home')" title="Home is where the heart is">Home</a>
-        <a href="javascript:void(0);" onclick="showTab('about')" title="Learn all about Markus">About</a>
-        <a href="javascript:void(0);" onclick="showTab('posts')" title="Read Markus's latest thoughts">Posts</a>
-    </div>
-    <div class="content">
-        <div id="home" class="tab-content active">Welcome to my homepage!</div>
-        <div id="about" class="tab-content">This is the About page.</div>
-        <div id="posts" class="tab-content">Here are my posts.</div>
-    </div>
-    <script>
-        function showTab(tabName) {
-            var tabs = document.getElementsByClassName('tab-content');
-            for (var i = 0; i < tabs.length; i++) {
-                tabs[i].style.display = 'none';
-                tabs[i].classList.remove('active');
-            }
-            var tab = document.getElementById(tabName);
-            tab.style.display = 'block';
-            setTimeout(function() {
-                tab.classList.add('active');
-            }, 10);
-        }
-    </script>
+    <nav id="nav">
+        <ul>
+            <li><a href="#about">About Me</a></li>|
+            <li><a href="#projects">Projects</a></li>|
+            <li><a href="#publications">Publications</a></li>|
+            <li><a href="#posts">Posts</a></li>|
+            <li><a href="https://github.com/CYHSM">GitHub</a></li>|
+            <li><a href="https://twitter.com/CYHSM">Twitter</a></li>|
+            <li><a href="https://scholar.google.de/citations?&user=BR3NilQAAAAJ">Scholar</a></li>
+        </ul>
+    </nav>
+
+    <section class="tab" id="about">
+        <h1>About Me</h1>
+        <div id="about-container">
+            <img id="profile-image" src="./me.jpeg" alt="Profile Picture">
+            <div id="about-text">
+                <p>
+                    I am a postdoctoral researcher with a background in computer science and cognitive science. 
+                    I received a bachelor's degree in computer science from University of Ulm before continuing 
+                    my studies in cognitive science at University of Tübingen. After my Master I joined the 
+                    Kavli Institute to pursue my PhD with 
+                    <a href="http://www.doellerlab.com/">Christian F. Doeller</a> and 
+                    <a href="http://www.barry-lab.com/">Caswell Barry</a>. Currently, I am a postdoc with <a href="http://www.mackenziemathislab.org/">Mackenzie W. Mathis</a>
+                    at EPFL.
+                </p>
+            </div>
+        </div>
+    </section>
+    
+
+    <section class="tab" id="projects">
+        <h2>Projects</h2>
+        <p>Project 1: Description...</p>
+        <p>Project 2: Description...</p>
+        <!-- Add more projects as needed -->
+    </section>
+
+    <section class="tab" id="publications">
+        <h2>Publications</h2>
+        <p><a href="publications/frey_curbio_2023.pdf" target="_blank"><strong>NeuroAI: If grid cells are the answer, is path integration the question?</strong></a><br>
+            M Frey, MW Mathis, A Mathis<br>
+            Current Biology 33 (5), R190-R192 | Year: 2023</p>
+
+        <p><a href="publications/frey_natneuro_2021.pdf" target="_blank"><strong>Magnetic resonance-based eye tracking using deep neural networks</strong></a><br>
+        M Frey, M Nau, CF Doeller<br>
+        Nature neuroscience 24 (12), 1772-1779 | Year: 2021</p>
+    
+        <p><a href="publications/frey_elife_2021.pdf" target="_blank"><strong>Interpreting wide-band neural activity using convolutional neural networks</strong></a><br>
+        M Frey, S Tanni, C Perrodin, A O'Leary, M Nau, J Kelly, A Banino, ...<br>
+        Elife 10, e66551 | Year: 2021</p>
+    
+        <p><a href="publications/nau_encoding_2020.pdf" target="_blank"><strong>Behavior-dependent directional tuning in the human visual-navigation network</strong></a><br>
+        M Nau, T Navarro Schröder, M Frey, CF Doeller<br>
+        Nature communications 11 (1), 3247 | Year: 2020</p>
+    
+        <p><a href="publications/frey_tumorseg_2019.pdf" target="_blank"><strong>Memory efficient brain tumor segmentation using an autoencoder-regularized u-net</strong></a><br>
+        M Frey, M Nau<br>
+        Brain lesion: Glioma, Multiple Sclerosis, Stroke and Traumatic Brain Injuries... | Year: 2020</p>
+    
+        <p><a href="publications/coletta_jneuro_2018.pdf" target="_blank"><strong>Testing the efficacy of single-cell stimulation in biasing presubicular head direction activity</strong></a><br>
+        S Coletta, M Frey, K Nasr, P Preston-Ferrer, A Burgalossi<br>
+        Journal of Neuroscience 38 (13), 3287-3302 | Year: 2018</p>
+    
+        <p><a href="publications/diamantaki_elife_2016.pdf" target="_blank"><strong>Sparse activity of identified dentate granule cells during spatial exploration</strong></a><br>
+        M Diamantaki, M Frey, P Berens, P Preston-Ferrer, A Burgalossi<br>
+        Elife 5, e20252 | Year: 2016</p>
+    
+        <p><a href="publications/ferrer_elife_2016.pdf" target="_blank"><strong>Anatomical organization of presubicular head-direction circuits</strong></a><br>
+        P Preston-Ferrer, S Coletta, M Frey, A Burgalossi<br>
+        elife 5, e14592 | Year: 2016</p>
+    
+        <p><a href="publications/diamantaki_curbio_2016.pdf" target="_blank"><strong>Priming spatial activity by single-cell stimulation in the dentate gyrus of freely moving rats</strong></a><br>
+        M Diamantaki, M Frey, P Preston-Ferrer, A Burgalossi<br>
+        Current Biology 26 (4), 536-541 | Year: 2016</p>
+    
+        <p><a href="publications/schwenker_svm_2014.pdf" target="_blank"><strong>A new multi-class fuzzy support vector machine algorithm</strong></a><br>
+        F Schwenker, M Frey, M Glodek, M Kächele, S Meudt, M Schels, ...<br>
+        Artificial Neural Networks in Pattern Recognition: 6th IAPR TC 3 … | Year: 2014</p>
+    </section>
+    
+    
+    <section class="tab" id="posts">
+        <h2>Posts</h2>
+        <!-- Assuming you use Markdown or similar for posts -->
+        <p>Post 1: <a href="URL_HERE">Title Here</a> <span style="color: #888;">(Date here)</span></p>
+        <p>Post 2: <a href="URL_HERE">Title Here</a> <span style="color: #888;">(Date here)</span></p>
+        <!-- Add more posts as needed -->
+    </section>
+    
+    <!-- <div class="footer">
+        <a href="https://github.com/YOUR_GITHUB_USERNAME">GitHub</a> | <a href="https://twitter.com/YOUR_TWITTER_HANDLE">Twitter</a>
+    </div> -->
 </body>
 </html>
