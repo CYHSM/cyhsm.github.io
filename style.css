@@ -94,3 +94,12 @@ body {
     white-space: normal; 
     z-index: 1;
 }
+.blog-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5px; 
+    /* box-shadow: 0px 0px 15px rgba(0,0,0,0.2);  */
+}
