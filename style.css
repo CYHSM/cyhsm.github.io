@@ -19,7 +19,7 @@ a:hover { text-decoration: underline; }
     background-color: #f2f2f2;
     border-bottom: 1px solid #ccc;
     border-top: 1px solid #ccc;
-    margin-left: 0px;
+    margin-left: -20px;
 }
 #nav li {
     display: inline-block;
@@ -27,7 +27,7 @@ a:hover { text-decoration: underline; }
     margin-right: 5px; /* Added to separate the links */
 }
 #profile-image {
-    width: 150px; /* Adjust size as needed */
+    width: 150px;
     border-radius: 50%; /* Creates the circular effect */
     display: block; /* Helps centering */
     margin: 0 auto; /* Centers the image */
@@ -38,7 +38,7 @@ a:hover { text-decoration: underline; }
 }
 
 #profile-image {
-    width: 150px; /* Adjust size as needed */
+    width: 150px;
     border-radius: 50%; /* Creates the circular effect */
     margin-right: 20px; /* Adds space between image and text */
 }
