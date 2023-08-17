@@ -1,0 +1,78 @@
+---
+title: "Quarto Basics"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import ipywidgets as widgets
+from IPython.display import display
+
+def load_data(layer_path):
+    return np.load(layer_path)
+
+def top_indices(arr, top_n=7):
+    return np.argsort(arr)[::-1][:top_n]
+
+def plot_rms_for_indices(rms, skaggs, grid_scores, indices, axes):
+    for j, idx in enumerate(indices):
+        axes[j].imshow(rms[idx], aspect='auto', cmap='turbo')
+        axes[j].set_title('Skaggs {:.1f}, Grid {:.1f}'.format(skaggs[idx], grid_scores[idx]), fontsize=8)
+        axes[j].axis('off')  # Optional: Turn off axis
+    return axes
+
+def initialize_visualization(top_n=10):
+    fig, axes = plt.subplots(2, top_n, figsize=(16, 4))
+    for ax in axes.ravel():
+        ax.axis('off')
+    plt.tight_layout()
+    return fig, axes
+
+def update_visualization(layer_path, fig, axes, top_n=7):
+    data = load_data(layer_path)
+    grid_scores = data['grid_scores']
+    rms = data['rms']
+    skaggs = data['skaggs']
+
+    top_skaggs = top_indices(skaggs, top_n)
+    top_grids = top_indices(grid_scores, top_n)
+
+    plot_rms_for_indices(rms, skaggs, grid_scores, top_skaggs, axes[0])
+    plot_rms_for_indices(rms, skaggs, grid_scores, top_grids, axes[1])
+
+    fig.canvas.draw()
+
+def widget_visualization(base_path, num_layers):
+    fig, axes = initialize_visualization()
+    
+    layer_slider = widgets.IntSlider(
+        value=0,
+        min=0,
+        max=num_layers-1,
+        step=1,
+        description='Layer:',
+        continuous_update=False  # To prevent excessive updates
+    )
+
+    def on_slider_change(change):
+        layer = 'visual.transformer.resblocks.{}'.format(change['new'])
+        layer_path = base_path.format(layer)
+        update_visualization(layer_path, fig, axes)
+
+    layer_slider.observe(on_slider_change, names='value')
+    display(layer_slider)
+    
+    # Initial visualization
+    layer = 'visual.transformer.resblocks.2'
+    layer_path = base_path.format(layer)
+    update_visualization(layer_path, fig, axes)
+
+base_path = '/home/marx/backupS4/data/markus//prayn/clip_results/layer{}.npz'
+num_layers = 12  # Assuming 12 layers for this example
+
+widget_visualization(base_path, num_layers)
+```
