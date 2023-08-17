@@ -26,19 +26,24 @@
         <img src="./media/plot_high_quality.svg" alt="Description of Image" class="blog-image">
         <p>This is </p>
         <div class="slider-container">
-            <input type="range" min="0" max="11" value="2" class="slider" id="layerSlider">
-            <img id="layerImage" src="./media/layers/layer_2.png" alt="Layer Visualization" class="slider-image">
+            <img id="layerImage" src="./media/layers/layer_2.svg" alt="Layer Visualization" class="blog-image">
+            <div class="slider-wrapper">
+                <span id="layerNumber">Layer 2</span>
+                <input type="range" min="0" max="11" value="2" class="slider" id="layerSlider">
+            </div>
         </div>
+        
     </section>
 
     <script>
-        // Wait until the DOM content is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             const slider = document.getElementById("layerSlider");
             const image = document.getElementById("layerImage");
+            const layerNumber = document.getElementById("layerNumber");
 
             slider.oninput = function() {
-                image.src = './media/layers/layer_' + this.value + '.png';
+                image.src = './media/layers/layer_' + this.value + '.svg';
+                layerNumber.innerText = 'Layer ' + this.value; // update layer number
             }
         });
     </script>

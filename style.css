@@ -103,12 +103,24 @@ body {
     border-radius: 5px; 
     /* box-shadow: 0px 0px 15px rgba(0,0,0,0.2);  */
 }
-.slider-image {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 5px; 
-    /* box-shadow: 0px 0px 15px rgba(0,0,0,0.2);   */
+
+.slider-container {
+    text-align: center; /* This will center the image and the slider-wrapper */
+    margin: 20px 0; /* Adjust as needed for vertical spacing */
+}
+
+.slider-wrapper {
+    display: inline-flex; /* Allows horizontal layout of children, while keeping the wrapper inline */
+    align-items: center; /* Vertically aligns children */
+}
+
+.slider {
+    width: 300px; /* Adjust to your desired width */
+    height: 25px; /* Adjust to your preference */
+    cursor: pointer; /* Hand cursor on hover */
+    margin-left: 10px; /* Some spacing to the left, to separate from the label */
+}
+
+#layerNumber {
+    padding-right: 10px; /* Some spacing to separate from the slider */
 }
