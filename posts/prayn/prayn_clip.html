@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,13 +8,14 @@
     <title>Post 1</title>
     <link rel="stylesheet" href="/style.css">
     <script>
-        window.onload = function() {
+        window.onload = function () {
             fetch('/navbar.html')
-            .then(response => response.text())
-            .then(data => document.getElementById('navbar-container').innerHTML = data);
+                .then(response => response.text())
+                .then(data => document.getElementById('navbar-container').innerHTML = data);
         }
     </script>
 </head>
+
 <body>
     <div id="navbar-container"></div>
 
@@ -22,9 +24,25 @@
         <img src="./media/stimuli.svg" alt="Description of Image" class="blog-image">
         <p>This is </p>
         <img src="./media/plot_high_quality.svg" alt="Description of Image" class="blog-image">
+        <p>This is </p>
+        <div class="slider-container">
+            <input type="range" min="0" max="11" value="2" class="slider" id="layerSlider">
+            <img id="layerImage" src="./media/layers/layer_2.png" alt="Layer Visualization" class="slider-image">
+        </div>
     </section>
+
+    <script>
+        // Wait until the DOM content is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.getElementById("layerSlider");
+            const image = document.getElementById("layerImage");
+
+            slider.oninput = function() {
+                image.src = './media/layers/layer_' + this.value + '.png';
+            }
+        });
+    </script>
+
 </body>
+
 </html>
-
-
-<!-- <p>This is <span class="footnote">[1]<span class="footnote-content"><img src="./media/plot_high_quality.svg" alt="Description of Image" class="blog-image"></span></span></p> -->
