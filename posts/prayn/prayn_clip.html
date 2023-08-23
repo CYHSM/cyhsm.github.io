@@ -23,16 +23,24 @@
         <h2>Spatially selective cells in CLIP</h2>
         <img src="./media/stimuli.svg" alt="Description of Image" class="blog-image">
         <p>This is </p>
-        <img src="./media/plot_high_quality.svg" alt="Description of Image" class="blog-image">
+        <img src="./media/logits.svg" alt="Description of Image" class="blog-image">
+        <p>This is </p>
+        <img src="./media/lesioned_logits.svg" alt="Description of Image" class="blog-image">
         <p>This is </p>
         <div class="slider-container">
             <img id="layerImage" src="./media/layers/layer_2.svg" alt="Layer Visualization" class="blog-image">
             <div class="slider-wrapper">
                 <span id="layerNumber">Layer 2</span>
                 <input type="range" min="0" max="11" value="2" class="slider" id="layerSlider">
+                
+                <!-- Checkbox for Random weights -->
+                <input type="checkbox" id="randomWeightsCheckbox">
+                <label for="randomWeightsCheckbox">Random weights</label>
             </div>
         </div>
-        
+        <p>This is </p>
+    </section>
+                
     </section>
 
     <script>
@@ -40,10 +48,26 @@
             const slider = document.getElementById("layerSlider");
             const image = document.getElementById("layerImage");
             const layerNumber = document.getElementById("layerNumber");
+            const randomWeightsCheckbox = document.getElementById("randomWeightsCheckbox"); // get the checkbox
 
+            // Define a function to update image source
+            function updateImageSource(value) {
+                if (randomWeightsCheckbox.checked) {
+                    image.src = './media/layers_random_weights/layer_' + value + '.svg';
+                } else {
+                    image.src = './media/layers/layer_' + value + '.svg';
+                }
+            }
+
+            // Slider input behavior
             slider.oninput = function() {
-                image.src = './media/layers/layer_' + this.value + '.svg';
-                layerNumber.innerText = 'Layer ' + this.value; // update layer number
+                updateImageSource(this.value);
+                layerNumber.innerText = 'Layer ' + this.value;
+            }
+
+            // Checkbox click behavior
+            randomWeightsCheckbox.onclick = function() {
+                updateImageSource(slider.value); // Update image based on current slider value
             }
         });
     </script>

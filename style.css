@@ -122,5 +122,14 @@ body {
 }
 
 #layerNumber {
-    padding-right: 10px; /* Some spacing to separate from the slider */
+    padding-right: 10px; 
+    margin-top: 1px;
+}
+
+#randomWeightsCheckbox {
+    opacity: 0.5;
+    margin-top: -1px;
+    margin-right: 5px; 
+    margin-bottom: 0;
+    margin-left: 70px;
 }
