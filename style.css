@@ -133,3 +133,38 @@ body {
     margin-bottom: 0;
     margin-left: 70px;
 }
+table {
+    font-family: Arial, sans-serif;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+}
+/* Styling specifically for the first column */
+td:first-child {
+    font-weight: bold; 
+    background-color: #f2f2f2;
+}
+th {
+    background-color: #f2f2f2;
+}
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+td:not(:first-child):hover {
+    background-color: #b8d1f3;
+}
+cite a {
+    text-decoration: underline; 
+    color: #0000EE; 
+    cursor: pointer; 
+  }
+  
+cite a:hover,
+cite a:focus {
+color: #551A8B;
+}

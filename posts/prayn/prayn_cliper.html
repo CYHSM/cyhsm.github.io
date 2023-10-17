@@ -20,7 +20,39 @@
     <div id="navbar-container"></div>
 
     <section class="tab" id="post1">
-        <h2>Spatially selective cells in CLIP</h2>
+        <article>
+            <p>
+                Recent publications studying the inner workings of foundation models have focused largely on 
+                internal representations of large language models (LLMs). In this short blog post, I will explore neural representations in visual foundation models 
+                (<a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al.</a>, 
+                <a href="https://arxiv.org/abs/2304.07193" target="_blank" rel="noopener">Oquab et al.</a>, 
+                <a href="https://ai.meta.com/research/publications/segment-anything/" target="_blank" rel="noopener">Kirillov et al.</a>),
+                trying to answer the question if we can find cells akin to the ones found in biological neural networks.
+            </p>
+            <p>
+                For this we first create a dataset which can be used to  
+                calculate receptive fields across artificial neurons (the 'design' phase). We then record neuronal 
+                responses across many different artificial layers ('record'). Subsequently, we visualize and quantify 
+                the responses using methods traditionally employed in neuroscience ('analyse'). Finally, we establish 
+                an 'artificial-causality' by virtually lesioning a subset of neurons with known properties and 
+                comparing the outcomes to our baseline ('perturb'). 
+            </p>
+            <p>
+                Each of the aforementioned steps (design, record, analyse, perturb) mirrors techniques used in 
+                neuroscience, with ANNs simplifying two (record & perturb) of these procedures dramatically. This 
+                simplification is possible because, unlike in biological studies, we have direct access to every 
+                single neuron and connection, allowing for an unprecedented level of detail in our investigation.
+            </p>
+        </article>
+
+
+        <h2>Exploring Neural Representations in Visual Foundation Models</h2>
+        <p>
+            The attention layers of specific residual blocks are targeted in this 
+            visualization process. Specifically, we are accessing 
+            <code>visual.transformer.resblocks.[L].attn</code> for each block index 
+            <code>L</code>, where <code>L ∈ {0, 1, ..., 11}.</code>
+        </p>
         <img src="./media/stimuli.svg" alt="Description of Image" class="blog-image">
         <p>- </p>
         <h2>Custom Statistics Table</h2>
