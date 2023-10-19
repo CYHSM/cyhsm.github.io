@@ -19,13 +19,17 @@ a:hover { text-decoration: underline; }
     background-color: #f2f2f2;
     border-bottom: 1px solid #ccc;
     border-top: 1px solid #ccc;
-    margin-left: -20px;
 }
 #nav li {
     display: inline-block;
-    text-align: center;
-    margin-right: 5px; /* Added to separate the links */
+    text-align: left;
+    margin-right: 5px; 
 }
+#nav li:last-child {
+    margin-right: 0;
+    padding-right: 50px;
+}
+
 #profile-image {
     width: 150px;
     border-radius: 50%; /* Creates the circular effect */
@@ -136,15 +140,19 @@ body {
 @media screen and (max-width: 600px) {
     .slider-wrapper {
         flex-direction: column;
-        align-items: center; 
+        align-items: center;
     }
-    .slider {
-        margin-bottom: 10px;
+    .slider,
+    #layerNumber {
+        margin-bottom: 10px; /* for example */
+    }
+    .checkbox-container {
+        display: flex; 
+        align-items: center; 
+        margin-top: 10px;
     }
     #randomWeightsCheckbox {
-        margin-left: 0;
-        margin-right: 0;
-        margin-bottom: 5px; 
+        margin-right: 5px; 
     }
 }
 table {
