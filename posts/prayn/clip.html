@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploring spatial representations in Visual Foundation Models</title>
+    <link rel="stylesheet" href="/style.css">
+    <script>
+        window.onload = function () {
+            fetch('/navbar.html')
+                .then(response => response.text())
+                .then(data => document.getElementById('navbar-container').innerHTML = data);
+        }
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+
+    <section class="tab" id="post1">
+        <article>
+            <h2>Exploring spatial representations in Visual Foundation Models</h2>
+            <p>
+                Recent publications studying the inner workings of foundation models have focused largely on 
+                internal representations of large <i>language</i> models (LLMs). In this short blog post, I will explore neural
+                 representations in large <i>vision</i> models
+                (<a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al.</a>, 
+                <a href="https://arxiv.org/abs/2304.07193" target="_blank" rel="noopener">Oquab et al.</a>, 
+                <a href="https://ai.meta.com/research/publications/segment-anything/" target="_blank" rel="noopener">Kirillov et al.</a>).
+                I will try to answer the question if we can find spatially selective cells akin to the ones found in biological neural networks.
+            </p>
+            <p>
+                For this I first create a dataset that can be used to  
+                calculate receptive fields across artificial neurons (<a href="#design-section" class="internal-link">'design'</a>). We then record neuronal 
+                responses across many different artificial layers (<a href="#record-section" class="internal-link">'record'</a>) and then visualize and quantify 
+                the responses using methods traditionally employed in neuroscience (<a href="#analyse-section" class="internal-link">'analyse'</a>). Finally, we establish 
+                an 'artificial-causality' by virtually lesioning a subset of spatially selective neurons (<a href="#perturb-section" class="internal-link">'perturb'</a>). 
+            </p>
+            <p>
+                Each of the aforementioned steps (design, record, analyse, perturb) mirrors techniques used in 
+                neuroscience, with artificial neural networks (ANNs) simplifying at least two (record & perturb) of these procedures dramatically. This 
+                simplification is possible because, unlike in biological studies, we have direct access to every 
+                single neuron and connection, allowing for an unprecedented level of detail in our investigation.
+            </p>
+
+            <h3 id="design-section">Design</h3>     
+            <p>
+                We first create a dataset containing 3000 stimuli which are randomly 
+                distributed across the visual field. Initially, I had the stimuli take 
+                several geometric forms (square, circle, triangle, rectangle) which were randomly 
+                picked during dataset creation. However, in the end, I decided against the added complexity 
+                and opted for simplicity by using only circles, which are randomly sampled to 
+                have a diameter between 20 and 80 pixels.
+            </p>
+            <figure class="figure">
+                <img src="./media/stimuli.svg" alt="Stimuli Visualization" class="blog-image">
+                <figcaption>
+                    <strong>Overview of dataset and stimulus locations.</strong>
+                    (Left) Eight representative stimuli of the synthetic dataset that are used to extract neural 
+                    activations across model layers. (Right) For each stimulus the center is visualized (top),
+                    accompanied by the composite image formed by aggregating across all stimuli dimensions (bottom).
+                </figcaption>
+            </figure>
+            <p>
+                With these stimuli at hand, we can characterize the receptive field within 
+                our model across the full visual field. As mentioned above there are several
+                visual foundation models (e.g. DINOv2, SAM, Clip, OpenClip, ...) each with their
+                own strengths and weaknesses. Currently the most used one of the above is CLIP, therefore I will use
+                a CLIP model, more specifically <a href="https://github.com/openai/CLIP" target="_blank" rel="noopener">ViT-B/32</a> 
+                for all subsequent analysis<span class="footnote">[I]<span class="footnote-content">These models are trained using a contrastive objective, given pairs of 
+                    images and text. During training, the loss is minimized to make sure that 
+                    each image in the embedding space is close to its paired text. To quantify performance during inference,
+                    people usually measure the similarity between the image and each of the text embeddings using cosine similarity 
+                    with the most similar text being the best match.</span></span>.
+            </p>
+            <p>
+                To find out if CLIP is able to recognize the above-created stimuli, we first
+                need to create text embeddings. Initially, I used three texts: [a circle, a square, a triangle]. 
+                These are used to calculate model performance across 
+                all stimuli within the dataset. The correct response for all stimuli would 
+                be "a circle", which CLIP gets right 88% of the time (see Table below). However, if we include 
+                another text ("an empty image"), the performance for "a circle" drops to 
+                9% while the performance for "an empty image" reaches 90%, indicating that 
+                CLIP now classifies the stimulus as an empty image instead of a circle.
+            </p>
+            
+            <p>
+                Initially, I was struggling with this problem for a while as I naively 
+                thought it to be trivial for CLIP to actually classify the circle 
+                correctly. After some experiments with other texts, I noticed that providing additional color information is 
+                enough to have CLIP recognize the correct shape. When using "a black circle" instead of "a circle" the classification performance
+                goes back up to 73%. 
+            </p>
+            <table>
+                <tr>
+                  <!-- Header row -->
+                  <th></th>
+                  <th>Circle</th>
+                  <th>Square</th>
+                  <th>Triangle</th>
+                  <th>Empty</th>
+                </tr>
+                <tr>
+                  <!-- First row data ("Shape") -->
+                  <td>Shape Only</td>
+                  <td style="font-weight:bold">0.88 ± 0.08</td>
+                  <td>0.05 ± 0.03</td> 
+                  <td>0.07 ± 0.06</td> 
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <!-- Second row data ("+Empty") -->
+                  <td>+ Empty</td>
+                  <td>0.09 ± 0.06</td> 
+                  <td>0.00 ± 0.00</td> 
+                  <td>0.00 ± 0.00</td>
+                  <td style="font-weight:bold">0.90 ± 0.06</td>
+                </tr>
+                <tr>
+                  <!-- Third row data ("+Color") -->
+                  <td>+ Color</td>
+                  <td style="font-weight:bold">0.73 ± 0.22</td>
+                  <td>0.06 ± 0.02</td>
+                  <td>0.00 ± 0.00</td>
+                  <td>0.21 ± 0.21</td>
+                </tr>
+            </table>
+
+            <h3 id="record-section">Record</h3>
+            <p>
+                Having established that CLIP is capable of "seeing" the circle with 
+                consistent accuracy we can proceed with the second step: recording 
+                neural responses. Within the PyTorch framework, this 
+                process merely requires the application of hooks to all model layers, which enables the capturing and storing
+                of responses across various stimuli for subsequent analysis:
+            </p>
+<pre><code class="language-python">def _register_hook(layer, layer_name, activations):
+    """
+    Register a forward hook to record the layer's activations.
+    """
+    layer.register_forward_hook(_create_activation_hook(layer_name, activations))
+
+def _create_activation_hook(layer_name, activations):
+    """
+    Define and return a hook for recording the layer's activations.
+    """
+    def hook(module, input, output):
+        activations[layer_name] = output.detach()
+    return hook</code></pre>
+            <p>
+                Note that the "recording" phase starkly contrasts with traditional neuroscience 
+                experiments, where single-cell recordings still demand a tremendous 
+                amount of effort. This typically involves skilled 
+                experimentalists doing meticulous work, which encompasses 
+                surgeries, implant placements, management of electrophysiological or 
+                calcium imaging devices, and numerous other complex tasks. 
+                In contrast, ANNs provide us a more efficient pathway: directly accessing
+                and analyzing neural responses, bypassing the invasive procedures inherent to 
+                biological studies and allowing for a more detailed exploration of the synthetic 
+                networks' internal processes.
+            </p>
+
+            <h3 id="analyse-section">Analyse</h3>
+            <p>
+                There are several methods to visualize neuronal responses from a trained neural network, e.g. 
+                by visualizing the filters or activation maps of convolutional layers or by adapting the input 
+                to maximally excite a given neuron within a specific model layer. Here, I will visualize the neuron activation
+                with respect to the spatial location of each stimulus, i.e. a ratemap of the activity of each neuron
+                shown in the image reference frame. As there are millions of parameters within CLIP, I only visualize responses
+                with respect to the vision transformer (63 million parameters) and focus in particular on 
+                the attention layers of specific residual blocks<span class="footnote">[I]<span class="footnote-content">The 
+                    below responses are from \(visual.transformer.resblocks.[L].attn\) for each residual block index 
+                    \(L\), with \( L ∈ {0, 1,...,11} \).
+                </span></span>. 
+            </p> 
+            <p>
+                Each residual block contains 50x768 parameters, where the first dimension indicates the number of patches (7x7)
+                plus the 'cls' token. In CLIP the 'cls' token is prepended to the sequence of image patches, then processed normally
+                to gather global image information, which is then extracted at the end as the main representation of the entire
+                image<span class="footnote">[I]<span class="footnote-content">To understand the intricacies of the vision transformer
+                it was helpful for me to look more closely at the code,
+                especially where the class embedding is <a href="https://github.com/openai/CLIP/blob/a1d071733d7111c9c014f024669f959182114e33/clip/model.py#L214" target="_blank" rel="noopener">initialized</a>
+                 and <a href="https://github.com/openai/CLIP/blob/a1d071733d7111c9c014f024669f959182114e33/clip/model.py#L227" target="_blank" rel="noopener">used</a>.</span></span>.
+                Below, I plot the ratemaps of the 'cls' token across all 12 residual layers, highlighting the top 5 neurons for 
+                three different scores, which are commonly used in neuroscience to quantify spatially selective cells. The spatial information score 
+                quantifies how well the firing rate of a cell predicts the animal's 
+                location in space, essentially indicating the amount of spatial information that the neuron's activity conveys.
+                The grid score quantifies the degree to which firing fields of a neuron form a periodic grid-like pattern, 
+                akin to grid cells found in the entorhinal cortex<span class="footnote">[I]<span class="footnote-content">I use the grid score here as my initial hypothesis was to find
+                    visual grid cells which encode locations within the image reference frame.</span></span>. 
+                The border score is used to measure the tendency of a neuron to fire selectively near the boundaries
+                of the environment, resembling the function of border cells that provide a sense of environmental borders.
+             </p>  
+            <figure class="figure">
+                <div class="slider-container">
+                    <img id="layerImage" src="./media/layers/layer_2.svg" alt="Layer Visualization" class="blog-image">
+                    <div class="slider-wrapper">
+                        <span id="layerNumber">Layer 2</span>
+                        <input type="range" min="0" max="11" value="2" class="slider" id="layerSlider">
+                        
+                        <div class="checkbox-container"> 
+                            <input type="checkbox" id="randomWeightsCheckbox">
+                            <label for="randomWeightsCheckbox">Random weights</label>
+                        </div>
+                    </div>
+                </div>
+                <figcaption>
+                    <strong>Neuronal activations across different model layers.</strong>
+                    For each layer, the ratemaps show the neurons with the highest scores with respect to the spatial
+                    information criteria, the grid score and the border score. When toggling the random weights box
+                    all responses are based on a randomly initialized CLIP model, using the initialization schema from the
+                    original paper. 
+                </figcaption>
+            </figure>
+            <p>
+            As shown above, there are spatially selective cells even in deeper network layers, which means that information about the 
+            position in screen coordinates is directly encoded. I originally expected these deeper layers to show an
+            invariance of the neurons to an object in screen coordinates, as seen in hippocampal structures where 
+            cells (mostly) fire with respect to world coordinates.
+            </p>
+
+            <h3 id="perturb-section">Perturb</h3>
+            <p>
+                Finally, we can assess whether perturbing the layers and the above described
+                 spatially selective cells will actually change 
+                the model's performance. For this, I first systematically lesion every single layer 
+                (note that in this case, we use all layers within each residual block, not 
+                just the attention layer as in the ratemaps above). Here, I again quantify 
+                performance based on the model classifying the input stimuli as "a black 
+                circle" or "an empty image". What do we expect to see? We would likely see the response
+                "empty image" when we lesion neurons that encode the position of an object in screen 
+                coordinates, thereby "blinding" the model to the stimulus. 
+            </p>
+            <figure class="figure">
+                <img src="./media/lesioned_logits.svg" alt="Description of Image" class="blog-image">
+                <figcaption>
+                    <strong>Performance of model across lesioned layers.</strong>
+                    Every layer within the model is lesioned by replacing the weights with 0. The performance 
+                    is then quantified with the lesioned model before restoring the model weights and continuing
+                    with the next layer. Note that the information flow is not zeroed out completely, due to the 
+                    skip connections within or across the residual blocks.
+                </figcaption>
+            </figure>
+        
+            <p>
+                In these lesioning experiments, we lesion layers within the model indiscriminately. Below, I want to 
+                explore how we can make targeted lesions with the goal of reducing model 
+                performance by lesioning as few neurons as possible. From the 
+                lesioning of the layers above, we can infer that the "best lesion" (in the sense 
+                that it resulted in the worst performance) occurred at Layer 9. With a targeted lesion, 
+                we aim to use fewer neurons to achieve even worse performance. For this we can introduce individual lesions 
+                for every single stimulus, by first obtaining ratemaps for each neuron, calculated across all stimuli. 
+                We then lesion the neurons which have the highest activity at the central location of the stimulus,
+                and do this for every stimulus in our dataset. 
+            </p>
+            <figure class="figure-side">
+                <img src="./media/targeted_lesion.svg" alt="Description of Image" class="blog-image">
+                <figcaption>
+                    <strong>Artificial Lesions in Residual Block 9.</strong>
+                    The x-axis quantifies the proportion of neurons ablated (n=768 neurons). The y-axis represents the performance 
+                    of the model in categorizing the stimulus as a circle. \( \textit{Random} \) refers to 
+                    random neuronal lesions within the layer, \( \textit{Targeted} \) denotes lesions applied
+                    to neurons exhibiting heightened activity at the stimulus location, and \( \textit{Targeted}_{\textit{Abs}} \)
+                    pertains to lesions targeting neurons with high or low activity at the stimulus location.
+                </figcaption>
+            </figure>
+            <p>
+                The targeted lesion shows that the above described spatially selective neurons have a causal influence 
+                on the performance of the model. The performance deficit is not as high as one might have suspected but 
+                this could be due to many neurons having multiple fields of high activity. 
+            </p>
+
+            <h3>Outlook</h3>
+            - Average scores across layers 
+            - More complex stimuli
+            - 
+        </article>
+
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.getElementById("layerSlider");
+            const image = document.getElementById("layerImage");
+            const layerNumber = document.getElementById("layerNumber");
+            const randomWeightsCheckbox = document.getElementById("randomWeightsCheckbox"); // get the checkbox
+
+            // Define a function to update image source
+            function updateImageSource(value) {
+                if (randomWeightsCheckbox.checked) {
+                    image.src = './media/layers_random_weights/layer_' + value + '.svg';
+                } else {
+                    image.src = './media/layers/layer_' + value + '.svg';
+                }
+            }
+
+            // Slider input behavior
+            slider.oninput = function() {
+                updateImageSource(this.value);
+                layerNumber.innerText = 'Layer ' + this.value;
+            }
+
+            // Checkbox click behavior
+            randomWeightsCheckbox.onclick = function() {
+                updateImageSource(slider.value); // Update image based on current slider value
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            hljs.highlightAll();
+        });
+    </script>
+
+</body>
+
+</html>

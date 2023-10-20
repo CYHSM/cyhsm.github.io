@@ -97,6 +97,26 @@ body {
     width: 250px;
     white-space: normal; 
     z-index: 1;
+    max-height: 150px; 
+    overflow-y: auto;
+}
+::-webkit-scrollbar-thumb {
+    background-color: darkgrey; 
+    border-radius: 10px; 
+    border: 3px solid transparent; 
+    background-clip: content-box; 
+}
+::-webkit-scrollbar-track {
+    background: lightgrey; 
+    border-radius: 10px; 
+    box-shadow: inset 0 0 5px white;
+}
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px; 
+}
+::-webkit-scrollbar-thumb:hover {
+    background: grey;
 }
 .blog-image {
     max-width: 100%;
@@ -169,10 +189,10 @@ th, td {
 /* Styling specifically for the first column */
 td:first-child {
     font-weight: bold; 
-    background-color: #f2f2f2;
+    background-color: #f3f3f3;
 }
 th {
-    background-color: #f2f2f2;
+    background-color: #f3f3f3;
 }
 tr:nth-child(even) {
     background-color: #f9f9f9;
@@ -189,4 +209,58 @@ cite a {
 cite a:hover,
 cite a:focus {
 color: #551A8B;
+}
+.figure {
+    border: 1px solid #ddd;
+    padding: 4px; 
+    margin: 16px 0; 
+    text-align: center; 
+    border-radius: 6px; 
+    background-color: #f3f3f3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.figure img {
+    width: 100%; 
+    border-radius: 4px; 
+    margin-bottom: 8px;
+}
+
+.figure figcaption {
+    color: #666;
+    font-size: 0.8em; 
+    font-style: italic; 
+    margin-top: 4px; 
+    text-align: left;
+    margin-left: 10px;
+}
+.figure-side {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    border: 1px solid #ddd;
+    padding: 4px; 
+    margin: 16px 0; 
+    border-radius: 6px; 
+    background-color: #f3f3f3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.figure-side img {
+    flex: 0 0 65%; /* Adjust to desired image width, currently 50% */
+    max-width: 65%; /* Limit the image's maximum width */
+    border-radius: 4px; 
+    margin-right: 8px; /* Spacing between the image and caption */
+}
+
+.figure-side figcaption {
+    flex: 1; /* Allow caption to take the remaining space */
+    color: #666;
+    font-size: 0.8em; 
+    font-style: italic; 
+    margin-left: 10px; /* Space from the left boundary */
+    text-align: left;
+}
+.internal-link {
+    color: #0077cc; /* Or any other color you prefer */
 }
