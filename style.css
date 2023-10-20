@@ -129,20 +129,34 @@ body {
 }
 
 .slider-container {
-    text-align: center; /* This will center the image and the slider-wrapper */
-    margin: 20px 0; /* Adjust as needed for vertical spacing */
+    text-align: center;
+    margin: 20px 0;
 }
 
 .slider-wrapper {
-    display: inline-flex; /* Allows horizontal layout of children, while keeping the wrapper inline */
-    align-items: center; /* Vertically aligns children */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; 
+    box-sizing: border-box; 
 }
 
 .slider {
-    width: 300px; /* Adjust to your desired width */
-    height: 25px; /* Adjust to your preference */
-    cursor: pointer; /* Hand cursor on hover */
-    margin-left: 10px; /* Some spacing to the left, to separate from the label */
+    width: calc(100% - 20px);
+    max-width: 300px; 
+    height: 25px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+@media (max-width: 600px) {
+    .slider {
+        width: calc(100% - 20px); 
+        height: 25px; 
+    }
+    .slider-container {
+        margin: 15px 0; 
+    }
 }
 
 #layerNumber {
@@ -245,7 +259,6 @@ color: #551A8B;
     background-color: #f3f3f3;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
-
 .figure-side img {
     flex: 0 0 65%; /* Adjust to desired image width, currently 50% */
     max-width: 65%; /* Limit the image's maximum width */
@@ -260,6 +273,26 @@ color: #551A8B;
     font-style: italic; 
     margin-left: 10px; /* Space from the left boundary */
     text-align: left;
+}
+@media (max-width: 750px) {
+    .figure-side {
+        display: block; /* Change from flex to block to stack child elements */
+        /* Other styles remain the same */
+    }
+
+    .figure-side img {
+        flex: none; /* Remove flex sizing */
+        max-width: 100%; /* Allow image to expand to the full width */
+        margin-right: 0; /* Remove right margin for the image */
+        /* Adjust if you need some space between the image and the caption */
+    }
+
+    .figure-side figcaption {
+        flex: none; /* Remove flex sizing */
+        margin-left: 0; /* Align with the image */
+        text-align: center; /* Optionally center the text */
+        margin-top: 8px; /* Optional: space between the image and caption */
+    }
 }
 .internal-link {
     color: #0077cc; /* Or any other color you prefer */
