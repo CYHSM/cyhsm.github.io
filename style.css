@@ -20,6 +20,9 @@ a:hover { text-decoration: underline; }
     border-bottom: 1px solid #ccc;
     border-top: 1px solid #ccc;
 }
+#nav ul {
+    padding-left: 0; 
+}
 #nav li {
     display: inline-block;
     text-align: left;
@@ -27,7 +30,6 @@ a:hover { text-decoration: underline; }
 }
 #nav li:last-child {
     margin-right: 0;
-    padding-right: 50px;
 }
 
 #profile-image {
