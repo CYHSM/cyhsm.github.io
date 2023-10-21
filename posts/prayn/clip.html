@@ -99,7 +99,6 @@
             </p>
             <table>
                 <tr>
-                  <!-- Header row -->
                   <th></th>
                   <th>Circle</th>
                   <th>Square</th>
@@ -107,7 +106,6 @@
                   <th>Empty</th>
                 </tr>
                 <tr>
-                  <!-- First row data ("Shape") -->
                   <td>Shape Only</td>
                   <td style="font-weight:bold">0.88 ± 0.08</td>
                   <td>0.05 ± 0.03</td> 
@@ -115,7 +113,6 @@
                   <td>-</td>
                 </tr>
                 <tr>
-                  <!-- Second row data ("+Empty") -->
                   <td>+ Empty</td>
                   <td>0.09 ± 0.06</td> 
                   <td>0.00 ± 0.00</td> 
@@ -123,7 +120,6 @@
                   <td style="font-weight:bold">0.90 ± 0.06</td>
                 </tr>
                 <tr>
-                  <!-- Third row data ("+Color") -->
                   <td>+ Color</td>
                   <td style="font-weight:bold">0.73 ± 0.22</td>
                   <td>0.06 ± 0.02</td>
@@ -316,6 +312,28 @@ def _create_activation_hook(layer_name, activations):
         document.addEventListener('DOMContentLoaded', (event) => {
             hljs.highlightAll();
         });
+    </script>
+    <script>
+        function adjustFootnotePosition() {
+        var footnotes = document.querySelectorAll('.footnote-content');
+        var viewportWidth = window.innerWidth;
+
+        footnotes.forEach(function(footnote) {
+            var rect = footnote.getBoundingClientRect();
+
+            if (rect.right > viewportWidth) {
+            var excessWidth = rect.right - viewportWidth;
+            // Increase the shift to the left by adding an additional amount, e.g., 50 pixels
+            footnote.style.left = `calc(50% - ${excessWidth}px - 50px)`;
+            } else if (rect.left < 0) { // in case it overflows to the left
+            // Increase the shift to the right by reducing from the left beyond just 50%
+            footnote.style.left = `calc(50% + ${Math.abs(rect.left)}px + 50px)`;
+            }
+        });
+        }
+
+        window.addEventListener('resize', adjustFootnotePosition);
+        window.addEventListener('load', adjustFootnotePosition);
     </script>
 
 </body>
