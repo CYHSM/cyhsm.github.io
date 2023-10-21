@@ -32,31 +32,32 @@
                  representations in large <i>vision</i> models
                 (<a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al.</a>, 
                 <a href="https://arxiv.org/abs/2304.07193" target="_blank" rel="noopener">Oquab et al.</a>, 
-                <a href="https://ai.meta.com/research/publications/segment-anything/" target="_blank" rel="noopener">Kirillov et al.</a>).
-                I will try to answer the question if we can find spatially selective cells akin to the ones found in biological neural networks.
+                <a href="https://ai.meta.com/research/publications/segment-anything/" target="_blank" rel="noopener">Kirillov et al.</a>)
+                with the aim to adress a specific question: Can we find spatially selective cells which encode parts of the visual field, 
+                akin to the ones found in biological neural networks?
             </p>
             <p>
-                For this I first create a dataset that can be used to  
-                calculate receptive fields across artificial neurons (<a href="#design-section" class="internal-link">'design'</a>). We then record neuronal 
-                responses across many different artificial layers (<a href="#record-section" class="internal-link">'record'</a>) and then visualize and quantify 
+                For this I first create a dataset that can be used to estimate receptive fields among synthetic neurons (<a href="#design-section" class="internal-link">'design'</a>).
+                We then record neuronal responses across many different artificial layers (<a href="#record-section" class="internal-link">'record'</a>) and visualize and quantify 
                 the responses using methods traditionally employed in neuroscience (<a href="#analyse-section" class="internal-link">'analyse'</a>). Finally, we establish 
                 an 'artificial-causality' by virtually lesioning a subset of spatially selective neurons (<a href="#perturb-section" class="internal-link">'perturb'</a>). 
             </p>
             <p>
-                Each of the aforementioned steps (design, record, analyse, perturb) mirrors techniques used in 
-                neuroscience, with artificial neural networks (ANNs) simplifying at least two (record & perturb) of these procedures dramatically. This 
-                simplification is possible because, unlike in biological studies, we have direct access to every 
-                single neuron and connection, allowing for an unprecedented level of detail in our investigation.
+                Each of the aforementioned steps — design, record, analyse, perturb — mirrors techniques used in 
+                neuroscience, with artificial neural networks (ANNs) simplifying at least two (record & perturb) of these procedures dramatically.
+                This simplification is made possible by the fact that, in contrast to biological tissues,
+                we have direct access to every single neuron and its connections,
+                enabling an investigation with an unprecedented level of detail.
             </p>
 
             <h3 id="design-section">Design</h3>     
             <p>
                 We first create a dataset containing 3000 stimuli which are randomly 
                 distributed across the visual field. Initially, I had the stimuli take 
-                several geometric forms (square, circle, triangle, rectangle) which were randomly 
-                picked during dataset creation. However, in the end, I decided against the added complexity 
-                and opted for simplicity by using only circles, which are randomly sampled to 
-                have a diameter between 20 and 80 pixels.
+                several geometric forms — square, circle, triangle, rectangle — which were randomly 
+                picked during dataset creation. I ultimately decided against the added complexity of different shapes
+                and used only circles, which are randomly sampled to 
+                have a diameter between 20 and 80 pixels and are positioned to cover the full visual field.
             </p>
             <figure class="figure">
                 <img src="./media/stimuli.svg" alt="Stimuli Visualization" class="blog-image">
@@ -68,34 +69,35 @@
                 </figcaption>
             </figure>
             <p>
-                With these stimuli at hand, we can characterize the receptive field within 
-                our model across the full visual field. As mentioned above there are several
-                visual foundation models (e.g. DINOv2, SAM, Clip, OpenClip, ...) each with their
-                own strengths and weaknesses. Currently the most used one of the above is CLIP, therefore I will use
-                a CLIP model, more specifically <a href="https://github.com/openai/CLIP" target="_blank" rel="noopener">ViT-B/32</a> 
-                for all subsequent analysis<span class="footnote">[I]<span class="footnote-content">These models are trained using a contrastive objective, given pairs of 
+                With these stimuli at hand, we can characterize the responses of neurons within a vision
+                model with respect to each location in the visual field. The model I will be using here is based 
+                on the original CLIP publication of OpenAI, more specifically we will use the <a href="https://github.com/openai/CLIP" target="_blank" rel="noopener">ViT-B/32</a> 
+                architecture<span class="footnote">[I]<span class="footnote-content">These models are trained using a contrastive objective, given pairs of 
                     images and text. During training, the loss is minimized to make sure that 
                     each image in the embedding space is close to its paired text. To quantify performance during inference,
                     people usually measure the similarity between the image and each of the text embeddings using cosine similarity 
                     with the most similar text being the best match.</span></span>.
             </p>
             <p>
-                To find out if CLIP is able to recognize the above-created stimuli, we first
-                need to create text embeddings. Initially, I used three texts: [a circle, a square, a triangle]. 
-                These are used to calculate model performance across 
-                all stimuli within the dataset. The correct response for all stimuli would 
-                be "a circle", which CLIP gets right 88% of the time (see Table below). However, if we include 
-                another text ("an empty image"), the performance for "a circle" drops to 
-                9% while the performance for "an empty image" reaches 90%, indicating that 
-                CLIP now classifies the stimulus as an empty image instead of a circle.
+                To explore whether CLIP can accurately identify the above-created stimuli, 
+                we first need to generate text embeddings to compare with the visual embeddings of these stimuli. 
+                Initially, I used three texts: a circle, a square and a triangle.
+                The correct response for all stimuli would 
+                be "a circle", which CLIP gets right 88% of the time (see Table below). 
+                However, the introduction of another descriptor ("an empty image") complicates the outcome.
+                The performance for "a circle" drops to 
+                9% while the performance for "an empty image" reaches 90%. 
+                This shift suggests that, rather than recognizing the shape, 
+                CLIP reclassifies the stimuli as resembling an empty image.
             </p>
-            
             <p>
                 Initially, I was struggling with this problem for a while as I naively 
                 thought it to be trivial for CLIP to actually classify the circle 
                 correctly. After some experiments with other texts, I noticed that providing additional color information is 
-                enough to have CLIP recognize the correct shape. When using "a black circle" instead of "a circle" the classification performance
-                goes back up to 73%. 
+                sufficient to have CLIP recognize the correct shape.
+                When using "a black circle" instead of "a circle" the classification performance
+                goes back up to 73%. This reveals how adding seemingly simple details to descriptors
+                can play a pivotal role in enhancing the model's ability to correctly identify visual elements.
             </p>
             <table>
                 <tr>
@@ -132,9 +134,11 @@
             <p>
                 Having established that CLIP is capable of "seeing" the circle with 
                 consistent accuracy we can proceed with the second step: recording 
-                neural responses. Within the PyTorch framework, this 
-                process merely requires the application of hooks to all model layers, which enables the capturing and storing
-                of responses across various stimuli for subsequent analysis:
+                neural responses. For this we integrate hooks into every model layer, which enables the capturing and storing
+                of responses across various stimuli for subsequent analysis. 
+                Generally, hooks are functions that are triggered after a specified event;
+                here they are triggered during the forward pass and store the layer activations<span class="footnote">[I]<span class="footnote-content">
+                Note that hooks can be also triggered during the backward pass, e.g. to <a href="https://medium.com/the-dl/how-to-use-pytorch-hooks-5041d777f904" target="_blank" rel="noopener">clip the gradients</a></span></span>:
             </p>
 <pre><code class="language-python">def _register_hook(layer, layer_name, activations):
     """
@@ -170,8 +174,8 @@ def _create_activation_hook(layer_name, activations):
                 with respect to the spatial location of each stimulus, i.e. a ratemap of the activity of each neuron
                 shown in the image reference frame. As there are millions of parameters within CLIP, I only visualize responses
                 with respect to the vision transformer (63 million parameters) and focus in particular on 
-                the attention layers of specific residual blocks<span class="footnote">[I]<span class="footnote-content">The 
-                    below responses are from \(visual.transformer.resblocks.[L].attn\) for each residual block index 
+                the attention layers of specific residual blocks<span class="footnote">[I]<span class="footnote-content">More 
+                    specifically I use layer \(visual.transformer.resblocks.[L].attn\) for each residual block 
                     \(L\), with \( L ∈ {0, 1,...,11} \).
                 </span></span>. 
             </p> 
@@ -215,43 +219,52 @@ def _create_activation_hook(layer_name, activations):
                 </figcaption>
             </figure>
             <p>
-            As shown above, there are spatially selective cells even in deeper network layers, which means that information about the 
-            position in screen coordinates is directly encoded. I originally expected these deeper layers to show an
+            As shown above, we can see that spatially selective cells persist even in deeper network layers, which implies 
+            that information about the position in screen coordinates is directly encoded in the activity of these neurons.
+            I originally anticipated these deeper layers to show an
             invariance of the neurons to an object in screen coordinates, as seen in hippocampal structures where 
-            cells (mostly) fire with respect to world coordinates.
+            cells (mostly) fire with respect to world coordinates. A more careful examination of these responses 
+            and their distribution across the model layers will be discussed in a future blog post.
             </p>
 
             <h3 id="perturb-section">Perturb</h3>
             <p>
                 Finally, we can assess whether perturbing the layers and the above described
-                 spatially selective cells will actually change 
-                the model's performance. For this, I first systematically lesion every single layer 
-                (note that in this case, we use all layers within each residual block, not 
-                just the attention layer as in the ratemaps above). Here, I again quantify 
+                 spatially selective cells will change 
+                the model's performance. For this, I first systematically lesion every single layer. 
+                In this case we use all layers within each residual block for both the visual and the language transformer, not 
+                just the attention layer as in the ratemaps above. Here, I again quantify 
                 performance based on the model classifying the input stimuli as "a black 
-                circle" or "an empty image". What do we expect to see? We would likely see the response
-                "empty image" when we lesion neurons that encode the position of an object in screen 
-                coordinates, thereby "blinding" the model to the stimulus. 
+                circle" or "an empty image".
             </p>
             <figure class="figure">
                 <img src="./media/lesioned_logits.svg" alt="Description of Image" class="blog-image">
                 <figcaption>
                     <strong>Performance of model across lesioned layers.</strong>
                     Every layer within the model is lesioned by replacing the weights with 0. The performance 
-                    is then quantified with the lesioned model before restoring the model weights and continuing
-                    with the next layer. Note that the information flow is not zeroed out completely, due to the 
-                    skip connections within or across the residual blocks.
+                    is then quantified with the lesioned model before restoring the model weights. Note that the information flow is not zeroed out completely, due to the 
+                    skip connections within the residual blocks.
                 </figcaption>
             </figure>
+            <p>
+                As seen in the plot above, performance varies widely between between different layers.
+                Lesioning certain layers appears to have a more pronounced effect on the model's ability 
+                to classify the stimuli accurately, especially when lesioning visual layers around "Resblock 9" the model 
+                struggles to detect any circle within the image. Lesioning or disrupting the first convolutional layer also
+                has a pronounced effect, suggesting that this layer is essential for capturing basic features and patterns
+                from the input, which are critical for subsequent layers to build upon and make accurate classifications.
+                Conversely, some layers, when lesioned, show minimal disruption in performance ("Resblock 11"),
+                suggesting their contributions might be redundant or less critical for this specific task. 
+            </p>
         
             <p>
-                In these lesioning experiments, we lesion layers within the model indiscriminately. Below, I want to 
-                explore how we can make targeted lesions with the goal of reducing model 
-                performance by lesioning as few neurons as possible. From the 
+                To find out if the neurons that we identified as encoding information about visual space 
+                also play a causal role in stimulus classification, we can make targeted lesions instead of lesioning layers indiscriminately.
+                From the 
                 lesioning of the layers above, we can infer that the "best lesion" (in the sense 
                 that it resulted in the worst performance) occurred at Layer 9. With a targeted lesion, 
-                we aim to use fewer neurons to achieve even worse performance. For this we can introduce individual lesions 
-                for every single stimulus, by first obtaining ratemaps for each neuron, calculated across all stimuli. 
+                we aim to use fewer neurons to achieve the same performance. For this I implemented individual lesions 
+                for every single stimulus. To perform individual lesions, we first obtain ratemaps for each neuron, calculated across all stimuli. 
                 We then lesion the neurons which have the highest activity at the central location of the stimulus,
                 and do this for every stimulus in our dataset. 
             </p>
@@ -267,15 +280,11 @@ def _create_activation_hook(layer_name, activations):
                 </figcaption>
             </figure>
             <p>
-                The targeted lesion shows that the above described spatially selective neurons have a causal influence 
-                on the performance of the model. The performance deficit is not as high as one might have suspected but 
-                this could be due to many neurons having multiple fields of high activity. 
-            </p>
-
-            <!-- <h3>Outlook</h3>
-            - Average scores across layers 
-            - More complex stimuli
-            -  -->
+                The targeted lesion shows that the above described spatially selective neurons seem to have a causal influence 
+                on the performance of the model, i.e. when lesioning cells that have a high activity in the lower left part of the image
+                in visual space, the model is unable to detect these stimuli. Note that the performance deficit is smaller than one might have suspected but 
+                this could be due to neurons having multiple fields of high activity (see ratemaps above in layer 9). 
+            </p>            
         </article>
 
     </section>
