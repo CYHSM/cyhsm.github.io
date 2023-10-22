@@ -299,3 +299,17 @@ color: #551A8B;
 .internal-link {
     color: #0077cc; /* Or any other color you prefer */
 }
+.box-list {
+    list-style-type: none; /* This removes the default bullets */
+    padding: 0; /* This removes the default padding */
+}
+.box-list li {
+    background-color: #f2f2f2; /* A light grey background */
+    margin: 10px 0; /* This adds some space around each box */
+    padding: 10px; /* This adds some space inside each box */
+    border: 1px solid #dddddd; /* A border around each box */
+    border-radius: 5px; /* Rounded corners for each box */
+}
+.box-list li:hover {
+    background-color: #b8d1f3; /* The color when the mouse hovers over */
+}

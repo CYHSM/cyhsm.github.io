@@ -286,6 +286,26 @@ def _create_activation_hook(layer_name, activations):
                 this could be due to neurons having multiple fields of high activity (see ratemaps above in layer 9). 
             </p>            
         </article>
+        <h3>
+            Outlook
+        </h3>
+        <p>
+            In this post I explored the inner representations of one of the most widely used 
+            vision models (CLIP) and show that there are spatially selective cells which 
+            are causally linked to the performance of the model. There's still a lot we don't know,
+            and I hope to address some of the open questions in a future post. Currently I am exploring 
+            the following research questions<span class="footnote">[I]<span class="footnote-content">
+                Your suggestions or additional questions are very welcome.
+                Please feel free to discuss it <a href="https://github.com/CYHSM/cyhsm.github.io/issues">here</a>.</span>:</span>
+
+            <ul class="box-list">
+                <li>Why do ratemaps from an untrained model often show border-like responses?</li>
+                <li>How does spatial selectivity arise during model training?</li>
+                <li>How are grid scores & border scores distributed across model layers?</li>
+                <li>Can we find targeted lesions which further drop the performance of the model compared to the ratemap based lesions from above?</li>
+                <li>Can we use targeted lesions to introduce or remove biases from the model?</li>
+            </ul>
+        </p>
 
     </section>
 
