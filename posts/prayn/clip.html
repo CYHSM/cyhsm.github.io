@@ -33,7 +33,7 @@
                 (<a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al.</a>, 
                 <a href="https://arxiv.org/abs/2304.07193" target="_blank" rel="noopener">Oquab et al.</a>, 
                 <a href="https://ai.meta.com/research/publications/segment-anything/" target="_blank" rel="noopener">Kirillov et al.</a>)
-                with the aim to adress a specific question: Can we find spatially selective cells which encode parts of the visual field, 
+                with the aim to adress a specific question: Can we find spatially selective cells that encode parts of the visual field, 
                 akin to the ones found in biological neural networks?
             </p>
             <p>
@@ -173,7 +173,7 @@ def _create_activation_hook(layer_name, activations):
                 to maximally excite a given neuron within a specific model layer. Here, I will visualize the neuron activation
                 with respect to the spatial location of each stimulus, i.e. a ratemap of the activity of each neuron
                 shown in the image reference frame. As there are millions of parameters within CLIP, I only visualize responses
-                with respect to the vision transformer (63 million parameters) and focus in particular on 
+                for the vision transformer (63 million parameters) and focus in particular on 
                 the attention layers of specific residual blocks<span class="footnote">[I]<span class="footnote-content">More 
                     specifically I use layer \(visual.transformer.resblocks.[L].attn\) for each residual block 
                     \(L\), with \( L ∈ {0, 1,...,11} \).
