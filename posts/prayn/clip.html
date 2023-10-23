@@ -65,7 +65,7 @@
                     <strong>Overview of dataset and stimulus locations.</strong>
                     (Left) Eight representative stimuli of the synthetic dataset that are used to extract neural 
                     activations across model layers. (Right) For each stimulus the center is visualized (top),
-                    accompanied by the composite image formed by aggregating across all stimuli dimensions (bottom).
+                    accompanied by the composite image formed by taking the average across all stimuli (bottom).
                 </figcaption>
             </figure>
             <p>
@@ -134,9 +134,9 @@
             <p>
                 Having established that CLIP is capable of "seeing" the circle with 
                 consistent accuracy we can proceed with the second step: recording 
-                neural responses. For this we integrate hooks into every model layer, which enables the capturing and storing
+                neural responses. For this we integrate hooks across all model layers, which enables the capturing and storing
                 of responses across various stimuli for subsequent analysis. 
-                Generally, hooks are functions that are triggered after a specified event;
+                In general, hooks are functions that are triggered after a specified event;
                 here they are triggered during the forward pass and store the layer activations<span class="footnote">[I]<span class="footnote-content">
                 Note that hooks can be also triggered during the backward pass, e.g. to <a href="https://medium.com/the-dl/how-to-use-pytorch-hooks-5041d777f904" target="_blank" rel="noopener">clip the gradients</a></span></span>:
             </p>
@@ -231,7 +231,7 @@ def _create_activation_hook(layer_name, activations):
             <p>
                 Finally, we can assess whether perturbing the layers and the above described
                  spatially selective cells will change 
-                the model's performance. For this, I first systematically lesion every single layer. 
+                the model's performance. For this, I first systematically lesion every layer by setting the weights to zero. 
                 In this case we use all layers within each residual block for both the visual and the language transformer, not 
                 just the attention layer as in the ratemaps above. Here, I again quantify 
                 performance based on the model classifying the input stimuli as "a black 
@@ -266,7 +266,7 @@ def _create_activation_hook(layer_name, activations):
                 we aim to use fewer neurons to achieve the same performance. For this I implemented individual lesions 
                 for every single stimulus. To perform individual lesions, we first obtain ratemaps for each neuron, calculated across all stimuli. 
                 We then lesion the neurons which have the highest activity at the central location of the stimulus,
-                and do this for every stimulus in our dataset. 
+                and do this across every stimulus in our dataset. 
             </p>
             <figure class="figure-side">
                 <img src="./media/targeted_lesion.svg" alt="Description of Image" class="blog-image">
@@ -281,9 +281,10 @@ def _create_activation_hook(layer_name, activations):
             </figure>
             <p>
                 The targeted lesion shows that the above described spatially selective neurons seem to have a causal influence 
-                on the performance of the model, i.e. when lesioning cells that have a high activity in the lower left part of the image
-                in visual space, the model is unable to detect these stimuli. Note that the performance deficit is smaller than one might have suspected but 
-                this could be due to neurons having multiple fields of high activity (see ratemaps above in layer 9). 
+                on the performance of the model, e.g. when lesioning cells that have a high activity in the lower left part of the image
+                in visual space, the model is unable to detect stimuli with a circle in the lower left part of the image. 
+                Note that the performance deficit is smaller than one might have suspected, 
+                likely due to neurons having multiple fields of high activity instead of a single bump (see ratemaps above in layer 9). 
             </p>            
         </article>
         <h3>
@@ -292,11 +293,11 @@ def _create_activation_hook(layer_name, activations):
         <p>
             In this post I explored the inner representations of one of the most widely used 
             vision models (CLIP) and show that there are spatially selective cells which 
-            are causally linked to the performance of the model. There's still a lot we don't know,
-            and I hope to address some of the open questions in a future post. Currently I am exploring 
+            are causally linked to the performance of the model. I hope to address some of the open questions 
+            in a future post, where I will be exploring some of
             the following research questions<span class="footnote">[I]<span class="footnote-content">
                 Your suggestions or additional questions are very welcome.
-                Please feel free to discuss it <a href="https://github.com/CYHSM/cyhsm.github.io/issues">here</a>.</span>:</span>
+                Please feel free to discuss it <a href="https://github.com/CYHSM/cyhsm.github.io/issues">here</a>.</span></span>:
 
             <ul class="box-list">
                 <li>Why do ratemaps from an untrained model often show border-like responses?</li>
