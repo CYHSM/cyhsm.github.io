@@ -23,7 +23,7 @@ body {
 
 h1, h2, h3 {
     color: var(--heading-color);
-    margin-top: 0.8em;
+    margin-top: 0.5em;
     margin-bottom: 0.5em;
     font-weight: 600;
 }
@@ -113,7 +113,7 @@ a:hover {
 
 /* Main content styles */
 .tab {
-    padding: 2rem 0;
+    padding: 1rem 0;
     max-width: 900px;
     margin: 0 auto;
 }
@@ -122,8 +122,8 @@ a:hover {
 #about-container {
     display: flex;
     align-items: flex-start;
-    gap: 2rem;
-    margin: 2rem 0;
+    gap: 1.5rem;
+    margin: 1rem 0;
 }
 
 #profile-image {
@@ -138,8 +138,8 @@ a:hover {
 
 /* Publications section */
 #publications p {
-    margin-bottom: 1.2rem;
-    padding-bottom: 1rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -344,8 +344,8 @@ code {
 .project-card, .post-card {
     background-color: white;
     border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -399,7 +399,7 @@ code {
 /* Show more/less buttons */
 .show-more-btn {
     display: block;
-    margin: 1.5rem auto;
+    margin: 1rem auto;
     padding: 0.5rem 1.5rem;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
