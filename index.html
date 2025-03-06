@@ -4,112 +4,266 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markus Frey</title>
+    <meta name="description" content="Markus Frey - Researcher in computer science and cognitive science">
+    <title>Markus Frey | Researcher</title>
+    
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Main stylesheet -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    
     <script>
-        window.onload = function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load navbar
             fetch('navbar.html')
-            .then(response => response.text())
-            .then(data => document.getElementById('navbar-container').innerHTML = data);
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('navbar-container').innerHTML = data;
+                    
+                    // IMPORTANT: Initialize mobile menu AFTER navbar is loaded
+                    initMobileMenu();
+                })
+                .catch(error => {
+                    console.error('Error loading navbar:', error);
+                });
+                
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Show/hide publications
+            const showMoreBtn = document.getElementById('show-more-pubs');
+            const showLessBtn = document.getElementById('show-less-pubs');
+            const morePublications = document.getElementById('more-publications');
+            
+            if (showMoreBtn && showLessBtn && morePublications) {
+                showMoreBtn.addEventListener('click', function() {
+                    morePublications.style.display = 'block';
+                    showMoreBtn.style.display = 'none';
+                    showLessBtn.style.display = 'block';
+                });
+                
+                showLessBtn.addEventListener('click', function() {
+                    morePublications.style.display = 'none';
+                    showMoreBtn.style.display = 'block';
+                    showLessBtn.style.display = 'none';
+                });
+            }
+        });
+        
+        // Function to initialize mobile menu toggle
+        function initMobileMenu() {
+            const navbarToggle = document.querySelector('.navbar-toggle');
+            const navbarLinks = document.querySelector('.navbar-links');
+            
+            if (navbarToggle && navbarLinks) {
+                navbarToggle.addEventListener('click', function() {
+                    navbarLinks.classList.toggle('active');
+                    navbarToggle.classList.toggle('active');
+                });
+            }
         }
     </script>
 </head>
 <body>
     <div id="navbar-container"></div>
-    <section class="tab" id="about">
-        <h1>About Me</h1>
-        <div id="about-container">
-            <img id="profile-image" src="./me.jpeg" alt="Profile Picture">
-            <div id="about-text">
+    
+    <div class="container">
+        <section class="tab" id="about">
+            <h1>About Me</h1>
+            <div id="about-container">
+                <img id="profile-image" src="./me.jpeg" alt="Profile Picture of Markus Frey">
+                <div id="about-text">
+                    <p> I am a machine learning researcher with a Ph.D. in computational neuroscience, specializing in neural-
+                        network models that tackle complex problems at the intersection of AI and neuroscience.
+                        I received a bachelor's degree in computer science from University of Ulm before continuing 
+                        my studies in cognitive science at University of Tübingen. I did my PhD in computational neuroscience
+                        at the Kavli Institute for Systems Neuroscience & the University College London.
+                </div>
+            </div>
+        </section>
+        
+        <section class="tab" id="publications">
+            <h2>Publications</h2>
+            
+            <p>
+                <a href="publications/schneider_2025.pdf" target="_blank">
+                    <strong>Time-series attribution maps with regularized contrastive learning</strong>
+                </a><br>
+                S Schneider, RG Laiz, A Filippova, M Frey, MW Mathis<br>
+                <span class="publication-venue">AISTATS (2025)</span>
+            </p>
+
+            <p>
+                <a href="publications/schneider_2024.pdf" target="_blank">
+                    <strong>Identifiable attribution maps using regularized contrastive learning</strong>
+                </a><br>
+                S Schneider, RG Laiz, M Frey, MW Mathis<br>
+                <span class="publication-venue">NeurIPS (2024)</span>
+            </p>
+
+            <p>
+                <a href="publications/achard_2024.pdf" target="_blank">
+                    <strong>CellSeg3D: self-supervised 3D cell segmentation for fluorescence microscopy</strong>
+                </a><br>
+                C Achard, T Kousi, M Frey, M Vidal, Y Paychère, C Hofmann, A Iqbal, S B Hausmann, S Pagès, MW Mathis<br>
+                <span class="publication-venue">eLife (2024)</span>
+            </p>
+
+            <p>
+                <a href="publications/frey_curbio_2023.pdf" target="_blank">
+                    <strong>NeuroAI: If grid cells are the answer, is path integration the question?</strong>
+                </a><br>
+                M Frey, MW Mathis, A Mathis<br>
+                <span class="publication-venue">Current Biology 33 (5), R190-R192 (2023)</span>
+            </p>
+
+            <p>
+                <a href="publications/frey_2023.pdf" target="_blank">
+                    <strong>Probing neural representations of scene perception in a hippocampally dependent task using artificial neural networks</strong>
+                </a><br>
+                M Frey, CF Doeller, C Barry<br>
+                <span class="publication-venue">CVPR (2023)</span>
+            </p>
+
+            <p>
+                <a href="publications/frey_natneuro_2021.pdf" target="_blank">
+                    <strong>Magnetic resonance-based eye tracking using deep neural networks</strong>
+                </a><br>
+                M Frey, M Nau, CF Doeller<br>
+                <span class="publication-venue">Nature neuroscience 24 (12), 1772-1779 (2021)</span>
+            </p>
+            
+            <!-- Add a "Show More Publications" button -->
+            <button id="show-more-pubs" class="show-more-btn">Show More Publications</button>
+            
+            <div id="more-publications" style="display: none;">
                 <p>
-                    I am a postdoctoral researcher with a background in computer science and cognitive science. 
-                    I received a bachelor's degree in computer science from University of Ulm before continuing 
-                    my studies in cognitive science at University of Tübingen. After my Master I joined the 
-                    Kavli Institute to pursue my PhD with 
-                    <a href="http://www.doellerlab.com/">Christian F. Doeller</a> and 
-                    <a href="http://www.barry-lab.com/">Caswell Barry</a>. Currently, I am a postdoc with <a href="http://www.mackenziemathislab.org/">Mackenzie W. Mathis</a>
-                    at EPFL.
+                    <a href="publications/frey_elife_2021.pdf" target="_blank">
+                        <strong>Interpreting wide-band neural activity using convolutional neural networks</strong>
+                    </a><br>
+                    M Frey, S Tanni, C Perrodin, A O'Leary, M Nau, J Kelly, A Banino, D Bendor, J Lefort, CF Doeller, C Barry<br>
+                    <span class="publication-venue">Elife 10, e66551 (2021)</span>
+                </p>
+                
+                <p>
+                    <a href="publications/nau_encoding_2020.pdf" target="_blank">
+                        <strong>Behavior-dependent directional tuning in the human visual-navigation network</strong>
+                    </a><br>
+                    M Nau, T Navarro Schröder, M Frey, CF Doeller<br>
+                    <span class="publication-venue">Nature communications 11 (1), 3247 (2020)</span>
+                </p>
+                
+                <p>
+                    <a href="publications/frey_tumorseg_2019.pdf" target="_blank">
+                        <strong>Memory efficient brain tumor segmentation using an autoencoder-regularized u-net</strong>
+                    </a><br>
+                    M Frey, M Nau<br>
+                    <span class="publication-venue">Brain lesion: MICCAI (2020)</span>
+                </p>
+                
+                <p>
+                    <a href="publications/coletta_jneuro_2018.pdf" target="_blank">
+                        <strong>Testing the efficacy of single-cell stimulation in biasing presubicular head direction activity</strong>
+                    </a><br>
+                    S Coletta, M Frey, K Nasr, P Preston-Ferrer, A Burgalossi<br>
+                    <span class="publication-venue">Journal of Neuroscience 38 (13), 3287-3302 (2018)</span>
                 </p>
             </div>
+            
+            <button id="show-less-pubs" class="show-more-btn" style="display: none;">Show Less</button>
+        </section>
+        
+        <section class="tab" id="projects">
+            <h2>Projects</h2>
+            
+            <div class="project-card">
+                <h3><a href="https://github.com/CYHSM/awesome-neuro-ai-papers" target="_blank">Awesome NeuroAI</a></h3>
+                <p>
+                    A curated list of papers and reviews from the intersection of deep learning and neuroscience.
+                    This resource collects significant contributions to the emerging field of NeuroAI.
+                </p>
+                <div class="project-links">
+                    <a href="https://github.com/CYHSM/awesome-neuro-ai-papers" target="_blank" class="project-link">GitHub Repository</a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <h3><a href="https://github.com/CYHSM/chess-surprise-analysis" target="_blank">The Human Move</a></h3>
+                <p>
+                    Quantifying the psychological impact of chess moves using a simple heuristic based on engine evaluations.
+                    This project explores the cognitive aspects of decision-making in chess.
+                </p>
+                <div class="project-links">
+                    <a href="https://github.com/CYHSM/chess-surprise-analysis" target="_blank" class="project-link">GitHub Repository</a>
+                </div>
+            </div>
+        </section>
+        
+        <section class="tab" id="posts">
+            <h2>Blog Posts</h2>
+            
+            <div class="post-card">
+                <h3>
+                    <a href="/posts/prayn/clip.html">Exploring spatial representations in Visual Foundation Models</a>
+                </h3>
+                <div class="post-meta">October 23, 2023</div>
+                <p class="post-excerpt">
+                    An exploration of neural representations in large vision models, with a focus on spatially selective cells
+                    that encode parts of the visual field, similar to those found in biological neural networks.
+                </p>
+                <a href="/posts/prayn/clip.html" class="read-more">Read More →</a>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2025 Markus Frey. All rights reserved.</p>
         </div>
-    </section>
+    </footer>
     
-    <section class="tab" id="publications">
-        <h2>Publications</h2>
-        <p><a href="publications/schneider_2025.pdf" target="_blank"><strong>Time-series attribution maps with regularized contrastive learning</strong></a><br>
-            S Schneider, RG Laiz, A Filippova, M Frey, MW Mathis<br>
-            AISTATS | Year: 2025</p>
-
-        <p><a href="publications/schneider_2024.pdf" target="_blank"><strong>Identifiable attribution maps using regularized contrastive learning</strong></a><br>
-            S Schneider, RG Laiz, M Frey, MW Mathis<br>
-            NeurIPS | Year: 2024</p>
-
-        <p><a href="publications/achard_2024.pdf" target="_blank"><strong>CellSeg3D: self-supervised 3D cell segmentation for fluorescence microscopy</strong></a><br>
-            C Achard, T Kousi, M Frey, M Vidal, Y Paychère, C Hofmann, A Iqbal, S B Hausmann, S Pagès, MW Mathis<br>
-            eLife | Year: 2024</p>
-
-        <p><a href="publications/frey_curbio_2023.pdf" target="_blank"><strong>NeuroAI: If grid cells are the answer, is path integration the question?</strong></a><br>
-        M Frey, MW Mathis, A Mathis<br>
-        Current Biology 33 (5), R190-R192 | Year: 2023</p>
-
-        <p><a href="publications/frey_2023.pdf" target="_blank"><strong>Probing neural representations of scene perception in a hippocampally dependent task using artificial neural networks</strong></a><br>
-            M Frey, CF Doeller, C Barry<br>
-            CVPR | Year: 2023</p>
-
-        <p><a href="publications/frey_natneuro_2021.pdf" target="_blank"><strong>Magnetic resonance-based eye tracking using deep neural networks</strong></a><br>
-        M Frey, M Nau, CF Doeller<br>
-        Nature neuroscience 24 (12), 1772-1779 | Year: 2021</p>
-    
-        <p><a href="publications/frey_elife_2021.pdf" target="_blank"><strong>Interpreting wide-band neural activity using convolutional neural networks</strong></a><br>
-        M Frey, S Tanni, C Perrodin, A O'Leary, M Nau, J Kelly, A Banino, D Bendor, J Lefort, CF Doeller, C Barry<br>
-        Elife 10, e66551 | Year: 2021</p>
-    
-        <p><a href="publications/nau_encoding_2020.pdf" target="_blank"><strong>Behavior-dependent directional tuning in the human visual-navigation network</strong></a><br>
-        M Nau, T Navarro Schröder, M Frey, CF Doeller<br>
-        Nature communications 11 (1), 3247 | Year: 2020</p>
-    
-        <p><a href="publications/frey_tumorseg_2019.pdf" target="_blank"><strong>Memory efficient brain tumor segmentation using an autoencoder-regularized u-net</strong></a><br>
-        M Frey, M Nau<br>
-        Brain lesion: MICCAI | Year: 2020</p>
-    
-        <p><a href="publications/coletta_jneuro_2018.pdf" target="_blank"><strong>Testing the efficacy of single-cell stimulation in biasing presubicular head direction activity</strong></a><br>
-        S Coletta, M Frey, K Nasr, P Preston-Ferrer, A Burgalossi<br>
-        Journal of Neuroscience 38 (13), 3287-3302 | Year: 2018</p>
-    
-        <p><a href="publications/diamantaki_elife_2016.pdf" target="_blank"><strong>Sparse activity of identified dentate granule cells during spatial exploration</strong></a><br>
-        M Diamantaki, M Frey, P Berens, P Preston-Ferrer, A Burgalossi<br>
-        Elife 5, e20252 | Year: 2016</p>
-    
-        <p><a href="publications/ferrer_elife_2016.pdf" target="_blank"><strong>Anatomical organization of presubicular head-direction circuits</strong></a><br>
-        P Preston-Ferrer, S Coletta, M Frey, A Burgalossi<br>
-        elife 5, e14592 | Year: 2016</p>
-    
-        <p><a href="publications/diamantaki_curbio_2016.pdf" target="_blank"><strong>Priming spatial activity by single-cell stimulation in the dentate gyrus of freely moving rats</strong></a><br>
-        M Diamantaki, M Frey, P Preston-Ferrer, A Burgalossi<br>
-        Current Biology 26 (4), 536-541 | Year: 2016</p>
-    
-        <p><a href="publications/schwenker_svm_2014.pdf" target="_blank"><strong>A new multi-class fuzzy support vector machine algorithm</strong></a><br>
-        F Schwenker, M Frey, M Glodek, M Kächele, S Meudt, M Schels, M Schmidt<br>
-        Artificial Neural Networks in Pattern Recognition | Year: 2014</p>
-    </section>
-    
-    <section class="tab" id="projects">
-        <h2>Projects</h2>
-        <p><strong><a href="https://github.com/CYHSM/awesome-neuro-ai-papers">Awesome NeuroAI</a></strong><br>
-            A curated list of Papers & Reviews from the intersection of deep learning and neuroscience. 
-            <br>
-         </p>
-         <p><strong><a href="https://github.com/CYHSM/chess-surprise-analysis">The Human Move</a></strong><br>
-            Quantifying the psychological impact of chess moves using a simple heuristic based on engine evaluations.
-            <br>
-         </p>
-    </section>
-    
-    <section class="tab" id="posts">
-        <h2>Posts</h2>
-        <p><strong><a href="/posts/prayn/clip.html"><strong></strong>Exploring spatial representations in Visual Foundation Models</strong></a> <span style="color: #888;">(23.10.23)</span></p>
-    </section>
-    <!-- <p><a href="/posts/essay/essay_you_uf.html">Why are you You?</a> <span style="color: #888;">(10.09.23)</span></p> -->
-
+    <script>
+        // Show/hide publications
+        document.addEventListener('DOMContentLoaded', function() {
+            const showMoreBtn = document.getElementById('show-more-pubs');
+            const showLessBtn = document.getElementById('show-less-pubs');
+            const morePublications = document.getElementById('more-publications');
+            
+            if (showMoreBtn && showLessBtn && morePublications) {
+                showMoreBtn.addEventListener('click', function() {
+                    morePublications.style.display = 'block';
+                    showMoreBtn.style.display = 'none';
+                    showLessBtn.style.display = 'block';
+                });
+                
+                showLessBtn.addEventListener('click', function() {
+                    morePublications.style.display = 'none';
+                    showMoreBtn.style.display = 'block';
+                    showLessBtn.style.display = 'none';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

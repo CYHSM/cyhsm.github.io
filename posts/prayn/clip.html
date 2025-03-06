@@ -1,47 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exploring spatial representations in Visual Foundation Models</title>
+    <meta name="description" content="Exploring spatial representations in Visual Foundation Models - A blog post by Markus Frey">
+    
+    <title>Exploring spatial representations in Visual Foundation Models | Markus Frey</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Main stylesheet -->
     <link rel="stylesheet" href="/style.css">
-    <script>
-        window.onload = function () {
-            fetch('/navbar.html')
-                .then(response => response.text())
-                .then(data => document.getElementById('navbar-container').innerHTML = data);
-        }
-    </script>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- MathJax for mathematical notation -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Syntax highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load navbar
+            fetch('/navbar.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('navbar-container').innerHTML = data;
+                })
+                .catch(error => {
+                    console.error('Error loading navbar:', error);
+                });
+                
+            // Initialize syntax highlighting
+            hljs.highlightAll();
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('.internal-link').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Initialize the layer slider functionality
+            initLayerSlider();
+            
+            // Adjust footnote positions
+            adjustFootnotePosition();
+            window.addEventListener('resize', adjustFootnotePosition);
+        });
+        
+        function initLayerSlider() {
+            const slider = document.getElementById("layerSlider");
+            const image = document.getElementById("layerImage");
+            const layerNumber = document.getElementById("layerNumber");
+            const randomWeightsCheckbox = document.getElementById("randomWeightsCheckbox");
+            
+            if (slider && image && layerNumber && randomWeightsCheckbox) {
+                // Define a function to update image source
+                function updateImageSource(value) {
+                    if (randomWeightsCheckbox.checked) {
+                        image.src = './media/layers_random_weights/layer_' + value + '.svg';
+                    } else {
+                        image.src = './media/layers/layer_' + value + '.svg';
+                    }
+                }
+                
+                // Slider input behavior
+                slider.oninput = function() {
+                    updateImageSource(this.value);
+                    layerNumber.innerText = 'Layer ' + this.value;
+                }
+                
+                // Checkbox click behavior
+                randomWeightsCheckbox.onclick = function() {
+                    updateImageSource(slider.value);
+                }
+            }
+        }
+        
+        function adjustFootnotePosition() {
+            var footnotes = document.querySelectorAll('.footnote-content');
+            var viewportWidth = window.innerWidth;
+            
+            footnotes.forEach(function(footnote) {
+                var rect = footnote.getBoundingClientRect();
+                
+                if (rect.right > viewportWidth) {
+                    var excessWidth = rect.right - viewportWidth;
+                    footnote.style.left = `calc(50% - ${excessWidth}px - 50px)`;
+                } else if (rect.left < 0) {
+                    footnote.style.left = `calc(50% + ${Math.abs(rect.left)}px + 50px)`;
+                }
+            });
+        }
+    </script>
+    
+    <!-- Custom CSS for blog posts -->
+    <style>
+        .blog-header {
+            text-align: center;
+            margin: 2rem 0 3rem;
+        }
+        
+        .blog-title {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .blog-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .blog-content {
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        
+        .blog-content p {
+            margin-bottom: 1.2rem;
+        }
+        
+        .blog-content h3 {
+            margin-top: 2.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .publication-venue {
+            display: inline-block;
+            background-color: #f0f5ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        /* Original footnote styling */
+        .footnote {
+            font-size: smaller;
+            vertical-align: super;
+            color: #0077cc;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .footnote-content {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 150%;
+            left: 50%;
+            color: rgb(43, 43, 43);
+            transform: translate(-50%, 0);
+            background-color: #f2f2f2;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: smaller;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+            text-align: center;
+            transition: all 0.3s ease;
+            width: 250px;
+            white-space: normal; 
+            z-index: 1;
+            max-height: 150px; 
+            overflow-y: auto;
+        }
+        
+        .footnote:hover .footnote-content {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Code styling */
+        pre {
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        code {
+            font-family: 'Courier New', 'Times New Roman', Times, serif;
+        }
+        
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 119, 204, 0.8);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body>
     <div id="navbar-container"></div>
-
-    <section class="tab" id="post1">
-        <article>
-            <h2>Exploring spatial representations in Visual Foundation Models</h2>
+    
+    <div class="container">
+        <article class="blog-content">
+            <header class="blog-header">
+                <h1 class="blog-title">Exploring spatial representations in Visual Foundation Models</h1>
+                <div class="blog-meta">October 23, 2023 · 10 min read</div>
+            </header>
+            
+            <!-- Blog content starts here -->
             <p>
                 Recent publications studying the inner workings of foundation models have focused largely on 
                 internal representations of large <i>language</i> models (LLMs). In this short blog post, I will explore neural
-                 representations in large <i>vision</i> models
+                representations in large <i>vision</i> models
                 (<a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al.</a>, 
                 <a href="https://arxiv.org/abs/2304.07193" target="_blank" rel="noopener">Oquab et al.</a>, 
                 <a href="https://ai.meta.com/research/publications/segment-anything/" target="_blank" rel="noopener">Kirillov et al.</a>)
                 with the aim to adress a specific question: Can we find spatially selective cells that encode parts of the visual field, 
                 akin to the ones found in biological neural networks?
             </p>
+            
             <p>
                 For this I first create a dataset that can be used to estimate receptive fields among synthetic neurons (<a href="#design-section" class="internal-link">'design'</a>).
                 We then record neuronal responses across many different artificial layers (<a href="#record-section" class="internal-link">'record'</a>) and visualize and quantify 
                 the responses using methods traditionally employed in neuroscience (<a href="#analyse-section" class="internal-link">'analyse'</a>). Finally, we establish 
                 an 'artificial-causality' by virtually lesioning a subset of spatially selective neurons (<a href="#perturb-section" class="internal-link">'perturb'</a>). 
             </p>
+            
             <p>
                 Each of the aforementioned steps — design, record, analyse, perturb — mirrors techniques used in 
                 neuroscience, with artificial neural networks (ANNs) simplifying at least two (record & perturb) of these procedures dramatically.
@@ -50,6 +269,9 @@
                 enabling an investigation with an unprecedented level of detail.
             </p>
 
+            <!-- Continue with the rest of your blog content -->
+            <!-- ... -->
+            
             <h3 id="design-section">Design</h3>     
             <p>
                 We first create a dataset containing 3000 stimuli which are randomly 
@@ -287,18 +509,18 @@ def _create_activation_hook(layer_name, activations):
                 likely due to neurons having multiple fields of high activity instead of a single bump (see ratemaps above in layer 9). 
             </p>            
         </article>
-        <h3>
-            Outlook
-        </h3>
-        <p>
-            In this post I explored the inner representations of one of the most widely used 
-            vision models (CLIP) and show that there are spatially selective cells which 
-            are causally linked to the performance of the model. I hope to address some of the open questions 
-            in a future post, where I will be exploring some of
-            the following research questions<span class="footnote">[I]<span class="footnote-content">
-                Your suggestions or additional questions are very welcome.
-                Please feel free to discuss it <a href="https://github.com/CYHSM/cyhsm.github.io/issues">here</a>.</span></span>:
-
+            
+            <h3>Outlook</h3>
+            <p>
+                In this post I explored the inner representations of one of the most widely used 
+                vision models (CLIP) and show that there are spatially selective cells which 
+                are causally linked to the performance of the model. I hope to address some of the open questions 
+                in a future post, where I will be exploring some of
+                the following research questions<span class="footnote">[I]<span class="footnote-content">
+                    Your suggestions or additional questions are very welcome.
+                    Please feel free to discuss it <a href="https://github.com/CYHSM/cyhsm.github.io/issues">here</a>.</span></span>:
+            </p>
+            
             <ul class="box-list">
                 <li>Why do ratemaps from an untrained model often show border-like responses?</li>
                 <li>How does spatial selectivity arise during model training?</li>
@@ -306,66 +528,38 @@ def _create_activation_hook(layer_name, activations):
                 <li>Can we find targeted lesions which further drop the performance of the model compared to the ratemap based lesions from above?</li>
                 <li>Can we use targeted lesions to introduce or remove biases from the model?</li>
             </ul>
-        </p>
-
-    </section>
-
+        </article>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2025 Markus Frey. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <a href="#" class="back-to-top" id="back-to-top">↑</a>
+    
     <script>
+        // Back to top button functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const slider = document.getElementById("layerSlider");
-            const image = document.getElementById("layerImage");
-            const layerNumber = document.getElementById("layerNumber");
-            const randomWeightsCheckbox = document.getElementById("randomWeightsCheckbox"); // get the checkbox
-
-            // Define a function to update image source
-            function updateImageSource(value) {
-                if (randomWeightsCheckbox.checked) {
-                    image.src = './media/layers_random_weights/layer_' + value + '.svg';
+            const backToTopButton = document.getElementById('back-to-top');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('visible');
                 } else {
-                    image.src = './media/layers/layer_' + value + '.svg';
+                    backToTopButton.classList.remove('visible');
                 }
-            }
-
-            // Slider input behavior
-            slider.oninput = function() {
-                updateImageSource(this.value);
-                layerNumber.innerText = 'Layer ' + this.value;
-            }
-
-            // Checkbox click behavior
-            randomWeightsCheckbox.onclick = function() {
-                updateImageSource(slider.value); // Update image based on current slider value
-            }
+            });
+            
+            backToTopButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            hljs.highlightAll();
-        });
-    </script>
-    <script>
-        function adjustFootnotePosition() {
-        var footnotes = document.querySelectorAll('.footnote-content');
-        var viewportWidth = window.innerWidth;
-
-        footnotes.forEach(function(footnote) {
-            var rect = footnote.getBoundingClientRect();
-
-            if (rect.right > viewportWidth) {
-            var excessWidth = rect.right - viewportWidth;
-            // Increase the shift to the left by adding an additional amount, e.g., 50 pixels
-            footnote.style.left = `calc(50% - ${excessWidth}px - 50px)`;
-            } else if (rect.left < 0) { // in case it overflows to the left
-            // Increase the shift to the right by reducing from the left beyond just 50%
-            footnote.style.left = `calc(50% + ${Math.abs(rect.left)}px + 50px)`;
-            }
-        });
-        }
-
-        window.addEventListener('resize', adjustFootnotePosition);
-        window.addEventListener('load', adjustFootnotePosition);
-    </script>
-
 </body>
-
 </html>
