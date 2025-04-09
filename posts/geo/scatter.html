@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Currency Scatter Plot</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #chartContainer {
+            width: 80%;
+            height: 500px;
+        }
+        select, input, button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Currency Scatter Plot Tool</h2>
+
+<div>
+    <label>Currency Pair X-Axis: </label>
+    <select id="pair1">
+        <option value="USD-EUR">USD-EUR</option>
+        <option value="USD-CHF">USD-CHF</option>
+        <option value="USD-NOK">USD-NOK</option>
+        <option value="USD-CNY">USD-CNY</option>
+        <option value="USD-JPY">USD-JPY</option>
+        <option value="USD-GBP">USD-GBP</option>
+        <option value="EUR-CHF">EUR-CHF</option>
+        <option value="EUR-NOK">EUR-NOK</option>
+        <option value="EUR-CNY">EUR-CNY</option>
+        <option value="EUR-JPY">EUR-JPY</option>
+        <option value="EUR-GBP">EUR-GBP</option>
+    </select>
+
+    <label>Currency Pair Y-Axis: </label>
+    <select id="pair2">
+        <option value="USD-EUR">USD-EUR</option>
+        <option value="USD-CHF">USD-CHF</option>
+        <option value="USD-NOK">USD-NOK</option>
+        <option value="USD-CNY">USD-CNY</option>
+        <option value="USD-JPY">USD-JPY</option>
+        <option value="USD-GBP">USD-GBP</option>
+        <option value="EUR-CHF">EUR-CHF</option>
+        <option value="EUR-NOK">EUR-NOK</option>
+        <option value="EUR-CNY">EUR-CNY</option>
+        <option value="EUR-JPY">EUR-JPY</option>
+        <option value="EUR-GBP">EUR-GBP</option>
+    </select>
+
+    <label>Days of Data: </label>
+    <input type="number" id="days" value="30" min="1" max="365">
+
+    <button onclick="fetchAndPlot()">Plot</button>
+</div>
+
+<div id="chartContainer">
+    <canvas id="scatterChart"></canvas>
+</div>
+
+<script>
+const currencies = ['USD', 'EUR', 'CHF', 'NOK', 'CNY', 'JPY', 'GBP'];
+const apiKey = 'demo';  // You need to replace this with your own key if needed.
+const baseURL = 'https://open.er-api.com/v6/latest/';
+
+async function fetchExchangeRates(base, target, days) {
+    const rates = [];
+    const endDate = new Date();
+    for (let i = 0; i < days; i++) {
+        const date = new Date(endDate);
+        date.setDate(date.getDate() - i);
+        const formattedDate = date.toISOString().split('T')[0];
+        const url = `https://api.frankfurter.app/${formattedDate}?from=${base}&to=${target}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.rates) {
+            rates.push({ date: formattedDate, rate: data.rates[target] });
+        }
+    }
+    return rates.reverse();
+}
+
+async function fetchAndPlot() {
+    const pair1 = document.getElementById('pair1').value.split('-');
+    const pair2 = document.getElementById('pair2').value.split('-');
+    const days = parseInt(document.getElementById('days').value);
+
+    const rates1 = await fetchExchangeRates(pair1[0], pair1[1], days);
+    const rates2 = await fetchExchangeRates(pair2[0], pair2[1], days);
+
+    if (rates1.length !== rates2.length) {
+        alert('Data mismatch — maybe some rates are missing.');
+        return;
+    }
+
+    const dataPoints = rates1.map((rate1, index) => ({
+        x: rate1.rate,
+        y: rates2[index].rate
+    }));
+
+    plotScatter(dataPoints, `${pair1[0]}-${pair1[1]}`, `${pair2[0]}-${pair2[1]}`);
+}
+
+function plotScatter(data, labelX, labelY) {
+    const ctx = document.getElementById('scatterChart').getContext('2d');
+    if (window.scatterChart) {
+        window.scatterChart.destroy();
+    }
+    window.scatterChart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: `${labelX} vs ${labelY}`,
+                data: data,
+                pointRadius: 5,
+                backgroundColor: 'rgba(75, 192, 192, 1)'
+            }]
+        },
+        options: {
+            scales: {
+                x: { title: { display: true, text: labelX } },
+                y: { title: { display: true, text: labelY } }
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>

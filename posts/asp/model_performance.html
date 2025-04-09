@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Performance Comparison</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #444;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .control-group {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin-top: 30px;
+        }
+        
+        svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+        
+        .axis path,
+        .axis line {
+            stroke: #ccc;
+        }
+        
+        .axis text {
+            font-size: 12px;
+            fill: #666;
+        }
+        
+        .axis-title {
+            font-size: 13px;
+            font-weight: 500;
+            fill: #555;
+        }
+        
+        .tooltip {
+            position: absolute;
+            padding: 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            pointer-events: none;
+            font-size: 14px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            opacity: 0;
+            transition: opacity 0.2s;
+            max-width: 300px;
+            z-index: 100;
+        }
+        
+        .tooltip h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+        }
+        
+        .tooltip p {
+            margin: 4px 0;
+            font-size: 13px;
+        }
+        
+        .tooltip .label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .tooltip .value {
+            color: #333;
+        }
+        
+        .tooltip .source {
+            margin-top: 8px;
+            font-weight: bold;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .legend-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .legend-item.disabled {
+            opacity: 0.5;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .summary {
+            margin-top: 25px;
+            font-size: 14px;
+            background-color: #f7f7f7;
+            padding: 15px;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+        
+        .summary h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .summary table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .summary th, .summary td {
+            text-align: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .summary th:first-child, .summary td:first-child {
+            text-align: left;
+        }
+        
+        .summary th {
+            font-weight: 500;
+            color: #555;
+            background-color: #f5f5f5;
+        }
+        
+        .summary tr:hover {
+            background-color: #f8f8f8;
+        }
+        
+        .error {
+            color: #d32f2f;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Model Performance: ImageNet vs OpenCLIP</h2>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="x-axis">X-Axis Metric:</label>
+                <select id="x-axis">
+                    <option value="complete_accuracy">Complete Accuracy</option>
+                    <option value="partial_accuracy">Partial Accuracy</option>
+                    <option value="roc_auc">ROC AUC</option>
+                    <option value="avg_same_diff_delta">Avg Same-Diff Delta</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="y-axis">Y-Axis Metric:</label>
+                <select id="y-axis">
+                    <option value="roc_auc">ROC AUC</option>
+                    <option value="complete_accuracy">Complete Accuracy</option>
+                    <option value="partial_accuracy">Partial Accuracy</option>
+                    <option value="avg_same_diff_delta">Avg Same-Diff Delta</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div id="loading" class="loading">Loading data...</div>
+            <svg id="chart"></svg>
+            <div id="tooltip" class="tooltip"></div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item" data-source="ImageNet" onclick="toggleModelVisibility('ImageNet')">
+                <div class="legend-color" style="background-color: #4e79a7;"></div>
+                <span>ImageNet Models</span>
+            </div>
+            <div class="legend-item" data-source="OpenCLIP" onclick="toggleModelVisibility('OpenCLIP')">
+                <div class="legend-color" style="background-color: #f28e2c;"></div>
+                <span>OpenCLIP Models</span>
+            </div>
+        </div>
+        
+        <div class="summary">
+            <h3>Average Performance Comparison</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Training Objective</th>
+                        <th>Complete Accuracy</th>
+                        <th>Partial Accuracy</th>
+                        <th>ROC AUC</th>
+                        <th>Avg Same-Diff Delta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color: rgba(78, 121, 167, 0.1);">
+                        <td style="font-weight: bold; color: #4e79a7;">ImageNet</td>
+                        <td>0.556</td>
+                        <td>0.683</td>
+                        <td>0.667</td>
+                        <td>0.020</td>
+                    </tr>
+                    <tr style="background-color: rgba(242, 142, 44, 0.1);">
+                        <td style="font-weight: bold; color: #f28e2c;">OpenCLIP</td>
+                        <td>0.627</td>
+                        <td>0.743</td>
+                        <td>0.721</td>
+                        <td>0.014</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 15px; font-style: italic;">
+                OpenCLIP models show a ~13% relative improvement in Complete Accuracy 
+                and an 8% improvement in ROC AUC compared to ImageNet models.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Metrics configuration
+        const metrics = {
+            complete_accuracy: { 
+                label: 'Complete Accuracy', 
+                format: (d) => d.toFixed(3),
+                description: 'Proportion of triplets where the model correctly identified the matching image'
+            },
+            partial_accuracy: { 
+                label: 'Partial Accuracy', 
+                format: (d) => d.toFixed(3),
+                description: 'More lenient metric that gives partial credit for near-misses'
+            },
+            roc_auc: { 
+                label: 'ROC AUC', 
+                format: (d) => d.toFixed(3),
+                description: 'Area under the ROC curve, measuring discrimination ability'
+            },
+            avg_same_diff_delta: { 
+                label: 'Avg Same-Diff Delta', 
+                format: (d) => d.toFixed(4),
+                description: 'Difference between same-scene and different-scene similarity'
+            }
+        };
+        
+        // Color scheme
+        const colors = {
+            imagenet: '#4e79a7',
+            openclip: '#f28e2c'
+        };
+        
+        // Initialize variables
+        let data = [];
+        let chart;
+        let xMetric = 'complete_accuracy';
+        let yMetric = 'roc_auc';
+        // Track visibility state of model types
+        let modelVisibility = {
+            'ImageNet': true,
+            'OpenCLIP': true
+        };
+        
+        // Initialize the tooltip
+        const tooltip = d3.select('#tooltip');
+        
+        // Set up the chart dimensions
+        function initChart() {
+            const container = document.querySelector('.chart-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = { top: 40, right: 30, bottom: 60, left: 70 };
+            
+            const svg = d3.select('#chart')
+                .attr('width', width)
+                .attr('height', height);
+                
+            // Clear existing content
+            svg.selectAll('*').remove();
+            
+            const chartArea = svg.append('g')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`);
+                
+            // Create scales
+            const xScale = d3.scaleLinear()
+                .range([0, width - margin.left - margin.right]);
+                
+            const yScale = d3.scaleLinear()
+                .range([height - margin.top - margin.bottom, 0]);
+                
+            // Create axes
+            const xAxis = chartArea.append('g')
+                .attr('class', 'axis x-axis')
+                .attr('transform', `translate(0, ${height - margin.top - margin.bottom})`);
+                
+            const yAxis = chartArea.append('g')
+                .attr('class', 'axis y-axis');
+                
+            // Add axis titles
+            const xTitle = chartArea.append('text')
+                .attr('class', 'axis-title x-title')
+                .attr('text-anchor', 'middle')
+                .attr('x', (width - margin.left - margin.right) / 2)
+                .attr('y', height - margin.top - 10)
+                .text(metrics[xMetric].label);
+                
+            const yTitle = chartArea.append('text')
+                .attr('class', 'axis-title y-title')
+                .attr('text-anchor', 'middle')
+                .attr('transform', 'rotate(-90)')
+                .attr('x', -(height - margin.top - margin.bottom) / 2)
+                .attr('y', -50)
+                .text(metrics[yMetric].label);
+                
+            // Create dot group
+            const dots = chartArea.append('g')
+                .attr('class', 'dots');
+                
+            return {
+                svg,
+                chartArea,
+                xScale,
+                yScale,
+                xAxis,
+                yAxis,
+                xTitle,
+                yTitle,
+                dots,
+                width,
+                height,
+                margin
+            };
+        }
+        
+        // Update the chart with current data and metrics
+        function updateChart() {
+            if (!data.length || !chart) return;
+            
+            // Update axis titles
+            chart.xTitle.text(metrics[xMetric].label);
+            chart.yTitle.text(metrics[yMetric].label);
+            
+            // Calculate domains based on ALL data, regardless of visibility
+            // This ensures the axes remain consistent
+            const xExtent = d3.extent(data, d => d[xMetric]);
+            const yExtent = d3.extent(data, d => d[yMetric]);
+            
+            // Add some padding to the domains
+            const xPadding = (xExtent[1] - xExtent[0]) * 0.05;
+            const yPadding = (yExtent[1] - yExtent[0]) * 0.05;
+            
+            chart.xScale.domain([xExtent[0] - xPadding, xExtent[1] + xPadding]);
+            chart.yScale.domain([yExtent[0] - yPadding, yExtent[1] + yPadding]);
+            
+            // Update axes
+            chart.xAxis.transition().duration(500).call(
+                d3.axisBottom(chart.xScale)
+                    .ticks(5)
+                    .tickFormat(d => metrics[xMetric].format(d))
+            );
+            
+            chart.yAxis.transition().duration(500).call(
+                d3.axisLeft(chart.yScale)
+                    .ticks(5)
+                    .tickFormat(d => metrics[yMetric].format(d))
+            );
+            
+            // Filter data based on visibility settings
+            const visibleData = data.filter(d => modelVisibility[d.source]);
+            
+            // Update dots with a simplified approach to avoid merge errors
+            // First remove all dots
+            chart.dots.selectAll('.dot').remove();
+            
+            // Then add dots for visible data
+            chart.dots.selectAll('.dot')
+                .data(visibleData)
+                .enter()
+                .append('circle')
+                .attr('class', 'dot')
+                .attr('r', 0)
+                .attr('cx', d => chart.xScale(d[xMetric]))
+                .attr('cy', d => chart.yScale(d[yMetric]))
+                .attr('fill', d => d.source === 'ImageNet' ? colors.imagenet : colors.openclip)
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 1)
+                .attr('opacity', 0.7)
+                .on('mouseover', handleMouseOver)
+                .on('mouseout', handleMouseOut)
+                .transition()
+                .duration(500)
+                .attr('r', 5);
+        }
+        
+        // Toggle visibility of model types
+        function toggleModelVisibility(source) {
+            // Toggle the visibility state
+            modelVisibility[source] = !modelVisibility[source];
+            
+            // Update the legend item appearance
+            const legendItem = document.querySelector(`.legend-item[data-source="${source}"]`);
+            if (legendItem) {
+                if (modelVisibility[source]) {
+                    legendItem.classList.remove('disabled');
+                } else {
+                    legendItem.classList.add('disabled');
+                }
+            }
+            
+            // Update the chart
+            updateChart();
+        }
+        
+        // Handle mouse over event
+        function handleMouseOver(event, d) {
+            const chartRect = chart.svg.node().getBoundingClientRect();
+            const containerRect = document.querySelector('.chart-container').getBoundingClientRect();
+            
+            const xPosition = event.clientX - containerRect.left;
+            const yPosition = event.clientY - containerRect.top;
+            
+            // Position the tooltip relative to mouse but constrained within container
+            tooltip
+                .style('left', `${xPosition}px`)
+                .style('top', `${yPosition - 10}px`)
+                .style('transform', 'translate(-50%, -100%)')
+                .html(`
+                    <h4>${d.model}</h4>
+                    <p class="source" style="color: ${d.source === 'ImageNet' ? colors.imagenet : colors.openclip}">
+                        ${d.source}
+                    </p>
+                    <p><span class="label">Complete Accuracy:</span> <span class="value">${metrics.complete_accuracy.format(d.complete_accuracy)}</span></p>
+                    <p><span class="label">Partial Accuracy:</span> <span class="value">${metrics.partial_accuracy.format(d.partial_accuracy)}</span></p>
+                    <p><span class="label">ROC AUC:</span> <span class="value">${metrics.roc_auc.format(d.roc_auc)}</span></p>
+                    <p><span class="label">Avg Same-Diff Delta:</span> <span class="value">${metrics.avg_same_diff_delta.format(d.avg_same_diff_delta)}</span></p>
+                `)
+                .style('opacity', 1);
+                
+            // Adjust tooltip position to ensure it stays within viewport
+            const tooltipNode = tooltip.node();
+            const tooltipRect = tooltipNode.getBoundingClientRect();
+            
+            // Check if tooltip is outside the left edge
+            if (tooltipRect.left < containerRect.left) {
+                tooltip.style('left', `${tooltipRect.width / 2 + 20}px`);
+            }
+            
+            // Check if tooltip is outside the right edge
+            if (tooltipRect.right > containerRect.right) {
+                tooltip.style('left', `${containerRect.width - tooltipRect.width / 2 - 20}px`);
+            }
+                
+            // Highlight the dot
+            d3.select(event.target)
+                .attr('r', 8)
+                .attr('stroke-width', 2)
+                .attr('opacity', 1);
+        }
+        
+        // Handle mouse out event
+        function handleMouseOut(event) {
+            // Hide the tooltip
+            tooltip.style('opacity', 0);
+            
+            // Restore dot appearance
+            d3.select(event.target)
+                .attr('r', 5)
+                .attr('stroke-width', 1)
+                .attr('opacity', 0.7);
+        }
+        
+        // Calculate and display summary statistics
+        function updateSummary() {
+            if (!data.length) return;
+            
+            // Group data by source
+            const sourceGroups = d3.group(data, d => d.source);
+            
+            // Calculate averages for each source
+            const summary = Array.from(sourceGroups, ([source, items]) => {
+                return {
+                    source,
+                    count: items.length,
+                    complete_accuracy: d3.mean(items, d => d.complete_accuracy),
+                    partial_accuracy: d3.mean(items, d => d.partial_accuracy),
+                    roc_auc: d3.mean(items, d => d.roc_auc),
+                    avg_same_diff_delta: d3.mean(items, d => d.avg_same_diff_delta)
+                };
+            });
+            
+            // Create summary table
+            const summaryContent = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Training Objective</th>
+                            <th>Count</th>
+                            <th>Complete Accuracy</th>
+                            <th>Partial Accuracy</th>
+                            <th>ROC AUC</th>
+                            <th>Avg Same-Diff Delta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${summary.map(s => `
+                            <tr>
+                                <td><strong>${s.source}</strong></td>
+                                <td>${s.count}</td>
+                                <td>${metrics.complete_accuracy.format(s.complete_accuracy)}</td>
+                                <td>${metrics.partial_accuracy.format(s.partial_accuracy)}</td>
+                                <td>${metrics.roc_auc.format(s.roc_auc)}</td>
+                                <td>${metrics.avg_same_diff_delta.format(s.avg_same_diff_delta)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <p style="margin-top: 10px;">
+                    OpenCLIP models generally outperform ImageNet models across all metrics, with particularly strong
+                    improvements in Complete Accuracy and ROC AUC.
+                </p>
+            `;
+            
+            document.getElementById('summary-content').innerHTML = summaryContent;
+        }
+        
+        // Load data from CSV files
+        async function loadData() {
+            try {
+                // Fetch both CSV files
+                const [imagenetResponse, openclipResponse] = await Promise.all([
+                    fetch('./data/results_imagenet.csv'),
+                    fetch('./data/results_openclip.csv')
+                ]);
+                
+                if (!imagenetResponse.ok || !openclipResponse.ok) {
+                    throw new Error('Failed to fetch CSV files');
+                }
+                
+                // Get text content
+                const [imagenetText, openclipText] = await Promise.all([
+                    imagenetResponse.text(),
+                    openclipResponse.text()
+                ]);
+                
+                // Parse CSV data
+                const parseOptions = {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true
+                };
+                
+                const imagenetData = Papa.parse(imagenetText, parseOptions).data;
+                const openclipData = Papa.parse(openclipText, parseOptions).data;
+                
+                // Add source field to identify the training objective
+                imagenetData.forEach(row => { row.source = 'ImageNet'; });
+                openclipData.forEach(row => { row.source = 'OpenCLIP'; });
+                
+                // Combine datasets
+                const combinedData = [...imagenetData, ...openclipData];
+                
+                // Log data counts to verify
+                console.log(`Loaded ${imagenetData.length} ImageNet models and ${openclipData.length} OpenCLIP models`);
+                
+                // Update state with loaded data
+                data = combinedData;
+                
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                
+                // Initialize and update chart
+                chart = initChart();
+                updateChart();
+                // No need to call updateSummary() anymore as we have a static summary table
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="error">
+                        <p>Error loading CSV data: ${error.message}</p>
+                        <p>Please ensure the CSV files are available at ../data/results_imagenet.csv and ../data/results_openclip.csv</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // No sample data - we want to use only real data from the CSVs
+        // This function is intentionally removed as we don't want to use sample data
+        
+        // Handle window resize
+        function handleResize() {
+            if (data.length) {
+                chart = initChart();
+                updateChart();
+            }
+        }
+        
+        // Handle metric change events
+        document.getElementById('x-axis').addEventListener('change', function() {
+            xMetric = this.value;
+            updateChart();
+        });
+        
+        document.getElementById('y-axis').addEventListener('change', function() {
+            yMetric = this.value;
+            updateChart();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', _.debounce(handleResize, 250));
+        
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
