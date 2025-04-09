@@ -419,7 +419,6 @@
             chart.yTitle.text(metrics[yMetric].label);
             
             // Calculate domains based on ALL data, regardless of visibility
-            // This ensures the axes remain consistent
             const xExtent = d3.extent(data, d => d[xMetric]);
             const yExtent = d3.extent(data, d => d[yMetric]);
             
@@ -446,14 +445,19 @@
             // Filter data based on visibility settings
             const visibleData = data.filter(d => modelVisibility[d.source]);
             
-            // Update dots with a simplified approach to avoid merge errors
-            // First remove all dots
-            chart.dots.selectAll('.dot').remove();
+            // Update dots
+            const dots = chart.dots.selectAll('.dot')
+                .data(visibleData, d => d.model); // Use model as key for stable updates
             
-            // Then add dots for visible data
-            chart.dots.selectAll('.dot')
-                .data(visibleData)
-                .enter()
+            // Remove exiting dots
+            dots.exit()
+                .transition()
+                .duration(500)
+                .attr('r', 0)
+                .remove();
+            
+            // Add new dots
+            dots.enter()
                 .append('circle')
                 .attr('class', 'dot')
                 .attr('r', 0)
@@ -468,27 +472,36 @@
                 .transition()
                 .duration(500)
                 .attr('r', 5);
+            
+            // Update existing dots
+            dots.transition()
+                .duration(500)
+                .attr('cx', d => chart.xScale(d[xMetric]))
+                .attr('cy', d => chart.yScale(d[yMetric]))
+                .attr('r', 5);
         }
         
         // Toggle visibility of model types
         function toggleModelVisibility(source) {
-            // Toggle the visibility state
             modelVisibility[source] = !modelVisibility[source];
+            
+            // Ensure at least one model type is always visible
+            if (!modelVisibility['ImageNet'] && !modelVisibility['OpenCLIP']) {
+                // If both would be hidden, revert the last toggle
+                modelVisibility[source] = true;
+                return;
+            }
             
             // Update the legend item appearance
             const legendItem = document.querySelector(`.legend-item[data-source="${source}"]`);
             if (legendItem) {
-                if (modelVisibility[source]) {
-                    legendItem.classList.remove('disabled');
-                } else {
-                    legendItem.classList.add('disabled');
-                }
+                legendItem.classList.toggle('disabled');
             }
             
             // Update the chart
             updateChart();
         }
-        
+                
         // Handle mouse over event
         function handleMouseOver(event, d) {
             const chartRect = chart.svg.node().getBoundingClientRect();

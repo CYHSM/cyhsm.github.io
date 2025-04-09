@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Performance Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f9fc;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 25px;
+            align-items: flex-start;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            justify-content: center;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .control-group > div label {
+             margin-left: 5px;
+             font-weight: normal;
+             font-size: 14px;
+             cursor: pointer;
+        }
+         .control-group > div input[type="checkbox"] {
+              cursor: pointer;
+         }
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+        }
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 200px;
+            background-color: white;
+        }
+        .selected-level {
+            background-color: #ebf5ff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+        }
+        .chart-container {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .chart-title {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .line-chart {
+            min-height: 300px;
+            width: 100%;
+        }
+        .chart-note {
+            font-size: 13px;
+            color: #666;
+            margin-top: 10px;
+            font-style: italic;
+            text-align: center;
+        }
+        .heatmap-container {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+        }
+        .heatmap-title {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .heatmap-content-wrapper {
+             width: 100%;
+             display: flex;
+             flex-direction: row;
+             justify-content: center;
+             align-items: flex-start;
+             gap: 20px;
+             margin-top: 10px;
+             position: relative;
+        }
+        .heatmap-grid {
+            display: inline-grid;
+            grid-gap: 2px;
+            box-sizing: border-box;
+        }
+        .color-scale.vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            width: 50px;
+            height: 400px;
+            padding: 10px 0;
+            border-left: 1px solid #eee;
+            margin-left: 10px;
+        }
+        .color-scale.vertical .color-label {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            white-space: normal;
+            width: 100%;
+        }
+        .color-scale.vertical .color-label .color-value {
+            font-size: 11px;
+            margin-left: 0;
+            margin-bottom: 3px;
+            display: block;
+        }
+        .color-scale.vertical .color-label .color-box {
+            width: 18px;
+            height: 18px;
+            margin-right: 0;
+            border: 1px solid #ccc;
+            flex-shrink: 0;
+        }
+        .color-scale.vertical .color-label:first-child { order: 1; }
+        .color-scale.vertical .color-gradient       { order: 2; }
+        .color-scale.vertical .color-label:last-child  { order: 3; }
+        .color-gradient {
+            flex-grow: 1;
+            width: 10px;
+            height: auto;
+             margin: 10px 0;
+             background: linear-gradient(to top, #313695, #abd9e9, #ffffbf, #fdae61, #a50026);
+             border-radius: 5px;
+        }
+        .heatmap-cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-family: monospace;
+            color: white;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+         .heatmap-cell[data-light-bg="true"] {
+             color: #333;
+             text-shadow: none;
+         }
+        .summary-stats {
+             display: block;
+             text-align: left;
+             font-size: 14px;
+             margin-top: 20px;
+             border-top: 1px solid #eee;
+             padding-top: 15px;
+             width: 90%;
+             max-width: calc(16 * 40px + 15 * 2px);
+             margin-left: auto;
+             margin-right: auto;
+         }
+        .summary-item {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .summary-label {
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        .loading-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            font-size: 16px;
+            color: #666;
+        }
+        .error-message {
+            color: #e53e3e;
+            padding: 15px;
+            background-color: #fff5f5;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .tooltip {
+            position: absolute;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            pointer-events: none;
+            font-size: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .tooltip h4 {
+            margin: 0 0 5px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="model-name">Model Performance Visualization</h1>
+        <div class="controls">
+             <div class="control-group">
+                 <h2>Line Chart Options</h2>
+                 <label>Lines to Show:</label>
+                 <div>
+                     <input type="checkbox" id="toggle-cls" name="line-toggle" value="cls" checked>
+                     <label for="toggle-cls">CLS Token</label>
+                 </div>
+                 <div>
+                     <input type="checkbox" id="toggle-patch" name="line-toggle" value="patch" checked>
+                     <label for="toggle-patch">Patch Max</label>
+                 </div>
+             </div>
+             <div class="control-group">
+                 <h2>Heatmap Options</h2>
+                <label for="heatmap-metric-select">Heatmap Metric:</label>
+                <select id="heatmap-metric-select">
+                    <option value="complete_accuracy">Complete Accuracy</option>
+                    <option value="partial_accuracy">Partial Accuracy</option>
+                    <option value="roc_auc">ROC AUC</option>
+                    <option value="avg_same_diff_delta">Avg Same-Diff Delta</option>
+                </select>
+                 <div id="selected-level" class="selected-level" style="display: none;">
+                    Selected Level: <span id="level-name"></span>
+                 </div>
+            </div>
+        </div>
+        <div id="loading" class="loading-indicator">Loading model data...</div>
+        <div id="error-container" class="error-message" style="display: none;"></div>
+        <div id="line-chart-container" class="chart-container" style="display: none;">
+             <h2 id="line-chart-title" class="chart-title">Performance Across Layers (Complete Accuracy & ROC AUC)</h2>
+            <div id="line-chart" class="line-chart"></div>
+            <p class="chart-note">Click on an area in the chart to see patch performance heatmap for that layer</p>
+        </div>
+        <div id="heatmap-container" class="heatmap-container" style="display: none;">
+            <h2 id="heatmap-title" class="heatmap-title">Patch Performance Heatmap</h2>
+             <div class="heatmap-content-wrapper">
+                <div id="heatmap-grid" class="heatmap-grid"></div>
+                <div class="color-scale vertical">
+                    <div class="color-label">
+                        <span id="max-value" class="color-value">1.000</span>
+                        <div class="color-box" style="background-color: #a50026;"></div>
+                    </div>
+                    <div class="color-gradient"></div>
+                    <div class="color-label">
+                         <span id="min-value" class="color-value">0.000</span>
+                         <div class="color-box" style="background-color: #313695;"></div>
+                    </div>
+                </div>
+                <div id="summary-stats" class="summary-stats">
+                    <div class="summary-item">
+                        <span class="summary-label">CLS Token:</span>
+                        <span id="cls-performance">N/A</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Patch Max:</span>
+                        <span id="patch-max-performance">N/A</span>
+                    </div>
+                    <div class="summary-item" id="all-tokens-container" style="display: none;">
+                        <span class="summary-label">All Tokens:</span>
+                        <span id="all-tokens-performance">N/A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="tooltip" class="tooltip"></div>
+    <script>
+        let modelData = null;
+        let processedData = null;
+        let chartData = [];
+        let selectedLevel = null;
+        let heatmapData = null;
+        let gridSize = 16;
+        let showCls = true;
+        let showPatch = true;
+        let selectedHeatmapMetric = 'complete_accuracy';
+
+        const metrics = [
+            { id: 'complete_accuracy', label: 'Complete Accuracy' },
+            { id: 'partial_accuracy', label: 'Partial Accuracy' },
+            { id: 'roc_auc', label: 'ROC AUC' },
+            { id: 'avg_same_diff_delta', label: 'Avg Same-Diff Delta' }
+        ];
+
+        function formatValue(value, metric) {
+            if (value === null || typeof value === 'undefined' || isNaN(value)) return 'N/A';
+            if (metric === 'avg_same_diff_delta') { return value.toFixed(5); }
+            return value.toFixed(3);
+        }
+
+        function getColorForValue(value, min, max) {
+            if (value === null || typeof value === 'undefined' || isNaN(value) || max === min) { return '#cccccc'; }
+            const normalizedValue = (value - min) / (max - min);
+            const t = Math.max(0, Math.min(1, normalizedValue));
+            return d3.interpolateRdYlBu(1 - t);
+        }
+
+        function formatMetric(metricId) {
+            const metric = metrics.find(m => m.id === metricId);
+            return metric ? metric.label : metricId;
+        }
+
+        function getLineChartMetricExtent(data) {
+            const activeValues = [];
+            const metricsToPlot = ['complete_accuracy', 'roc_auc'];
+            data.forEach(d => {
+                metricsToPlot.forEach(metric => {
+                    if (showCls && d[`cls_${metric}`] !== null && !isNaN(d[`cls_${metric}`])) { activeValues.push(d[`cls_${metric}`]); }
+                    if (showPatch && d[`patch_${metric}`] !== null && !isNaN(d[`patch_${metric}`])) { activeValues.push(d[`patch_${metric}`]); }
+                });
+            });
+            if (activeValues.length === 0) { return [0, 1]; }
+            let minVal = d3.min(activeValues);
+            let maxVal = d3.max(activeValues);
+            if (minVal > maxVal) [minVal, maxVal] = [maxVal, minVal];
+            const range = maxVal - minVal;
+            const padding = (range > 0) ? range * 0.1 : 0.1;
+            let finalMin = minVal - padding;
+            let finalMax = maxVal + padding;
+            if (minVal >= 0 && maxVal <= 1) {
+                 finalMin = Math.max(-0.05, finalMin);
+                 finalMax = Math.min(1.05, finalMax);
+            }
+             finalMin = Math.min(finalMin, finalMax - 0.01);
+             return [finalMin, finalMax];
+        }
+
+        async function loadData() {
+            try {
+                document.getElementById('loading').style.display = 'flex';
+                document.getElementById('error-container').style.display = 'none';
+                document.getElementById('line-chart-container').style.display = 'none';
+                document.getElementById('heatmap-container').style.display = 'none';
+
+                const dataUrl = './data/EVA02-E-14_laion2b_s4b_b115k_all_token_results.json';
+                const response = await fetch(dataUrl);
+                if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
+                const text = await response.text();
+                if (!text || text.trim() === '') { throw new Error("Fetched data file is empty."); }
+
+                modelData = JSON.parse(text);
+                if (!modelData || !modelData.token_results || !Array.isArray(modelData.token_results)) { throw new Error("Missing 'token_results' array."); }
+
+                 if (modelData.model_name) { document.getElementById('model-name').textContent = `${modelData.model_name} Performance Visualization`; }
+
+                processData();
+
+                document.getElementById('line-chart-container').style.display = 'block';
+                createLineChart();
+
+                document.getElementById('loading').style.display = 'none';
+                setupEventListeners();
+
+            } catch (err) {
+                console.error("Error during data loading:", err);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-container').textContent = `Error: ${err.message}. Check console.`;
+                document.getElementById('error-container').style.display = 'block';
+            }
+        }
+
+        function processData() {
+            if (!modelData || !modelData.token_results) return;
+            const levels = Array.from(new Set(modelData.token_results.map(item => item.original_level_name)))
+                             .sort((a, b) => (parseInt(a.split('_').pop()) || 0) - (parseInt(b.split('_').pop()) || 0));
+            const performanceByLevel = {};
+            levels.forEach(level => {
+                const levelEntries = modelData.token_results.filter(item => item.original_level_name === level);
+                const clsEntry = levelEntries.find(item => item.token_mode === 'cls');
+                const allEntry = levelEntries.find(item => item.token_mode === 'all');
+                const patchEntries = levelEntries.filter(item => item.token_mode === 'patch');
+                const patchMax = {};
+                metrics.forEach(metric => {
+                    const validPatches = patchEntries.map(p => p[metric.id]).filter(v => v !== null && !isNaN(v));
+                    patchMax[metric.id] = validPatches.length > 0 ? Math.max(...validPatches) : null;
+                });
+                performanceByLevel[level] = {
+                    levelNum: parseInt(level.split('_').pop()) || 0,
+                    cls: clsEntry, all: allEntry, patchMax: patchMax, patches: patchEntries
+                };
+            });
+
+            if (levels.length > 0 && performanceByLevel[levels[0]].patches.length > 0) {
+                gridSize = Math.ceil(Math.sqrt(performanceByLevel[levels[0]].patches.length));
+            } else { gridSize = 1; }
+
+             chartData = levels.map(level => {
+                 const levelData = performanceByLevel[level];
+                 const entry = { levelNum: levelData.levelNum, level };
+                 metrics.forEach(metric => {
+                     entry[`cls_${metric.id}`] = levelData.cls ? levelData.cls[metric.id] : null;
+                     entry[`patch_${metric.id}`] = levelData.patchMax[metric.id];
+                 });
+                 return entry;
+             });
+            processedData = { levels, performanceByLevel };
+            if (levels.length > 0) { selectedLevel = levels[0]; }
+        }
+
+        function createLineChart() {
+            const chartElement = document.getElementById('line-chart');
+            chartElement.innerHTML = '';
+            const containerWidth = chartElement.clientWidth;
+            const containerHeight = Math.max(chartElement.clientHeight, 300);
+            const margin = { top: 30, right: 120, bottom: 50, left: 60 };
+            const width = containerWidth - margin.left - margin.right;
+            const height = containerHeight - margin.top - margin.bottom;
+
+            if (width <= 0 || height <= 0 || !chartData || chartData.length === 0) {
+                 console.error("Cannot create chart: Invalid dimensions or no data."); return;
+            }
+
+            const svg = d3.select('#line-chart').append('svg')
+                .attr('width', containerWidth).attr('height', containerHeight)
+                .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+            svg.append('g').attr('class', 'x-axis').attr('transform', `translate(0,${height})`);
+            svg.append('g').attr('class', 'y-axis');
+            svg.append('text').attr('class', 'x-axis-label').attr('x', width / 2).attr('y', height + margin.bottom - 10).style('text-anchor', 'middle').text('Layer');
+            svg.append('text').attr('class', 'y-axis-label').attr('transform', 'rotate(-90)').attr('x', -height / 2).attr('y', -margin.left + 20).style('text-anchor', 'middle').text('Performance Score');
+            svg.append('g').attr('class', 'lines');
+            svg.append('g').attr('class', 'points');
+            svg.append('g').attr('class', 'voronoi-overlay');
+
+            updateChart();
+        }
+
+        function updateChart() {
+             const svg = d3.select('#line-chart svg g');
+             if (svg.empty()) { return; }
+             const containerWidth = d3.select('#line-chart').node().clientWidth;
+             const margin = { top: 30, right: 120, bottom: 50, left: 60 };
+             const width = containerWidth - margin.left - margin.right;
+             const height = Math.max(d3.select('#line-chart').node().clientHeight, 300) - margin.top - margin.bottom;
+
+             if (width <= 0 || height <= 0 || !chartData || chartData.length === 0) { return; }
+
+             const xScale = d3.scaleLinear().domain(d3.extent(chartData, d => d.levelNum)).nice().range([0, width]);
+             const [minY, maxY] = getLineChartMetricExtent(chartData);
+             const yScale = d3.scaleLinear().domain([minY, maxY]).nice().range([height, 0]);
+             const duration = 500;
+
+             svg.select('.x-axis').transition().duration(duration).call(d3.axisBottom(xScale).ticks(Math.min(chartData.length, 10)).tickFormat(d3.format("d")));
+             svg.select('.y-axis').transition().duration(duration).call(d3.axisLeft(yScale).ticks(5));
+
+             const lineConfigs = [
+                { id: 'cls_ca',   metric: 'complete_accuracy', type: 'cls',   active: showCls,   color: '#4e79a7', dash: null },
+                { id: 'patch_ca', metric: 'complete_accuracy', type: 'patch', active: showPatch, color: '#f28e2c', dash: null },
+                { id: 'cls_roc',  metric: 'roc_auc',           type: 'cls',   active: showCls,   color: '#4e79a7', dash: '4,2' },
+                { id: 'patch_roc',metric: 'roc_auc',           type: 'patch', active: showPatch, color: '#f28e2c', dash: '4,2' }
+             ];
+
+             const linesGroup = svg.select('.lines');
+             lineConfigs.forEach(config => {
+                 const lineGen = d3.line().x(d => xScale(d.levelNum)).y(d => yScale(d[`${config.type}_${config.metric}`])).defined(d => d[`${config.type}_${config.metric}`] !== null && !isNaN(d[`${config.type}_${config.metric}`]));
+                 let line = linesGroup.selectAll(`.line.${config.id}`).data(config.active ? [chartData] : []);
+                 line.exit().transition().duration(duration).attr('opacity', 0).remove();
+                 line.enter().append('path').attr('class', `line ${config.id}`).attr('fill', 'none').attr('stroke-width', 2).attr('opacity', 0).merge(line)
+                     .transition().duration(duration).attr('opacity', 1).attr('stroke', config.color).attr('stroke-dasharray', config.dash).attr('d', lineGen);
+             });
+
+             const pointsGroup = svg.select('.points');
+             lineConfigs.forEach(config => {
+                  const pointData = config.active ? chartData.filter(d => d[`${config.type}_${config.metric}`] !== null && !isNaN(d[`${config.type}_${config.metric}`])) : [];
+                  let points = pointsGroup.selectAll(`.point.${config.id}`).data(pointData, d => `${d.level}-${config.id}`);
+                  points.exit().transition().duration(duration).attr('r', 0).remove();
+                  points.enter().append('circle').attr('class', `point ${config.id}`).attr('r', 0).merge(points)
+                      .transition().duration(duration).attr('r', 4).attr('cx', d => xScale(d.levelNum)).attr('cy', d => yScale(d[`${config.type}_${config.metric}`])).attr('fill', config.color);
+             });
+
+             const voronoiGroup = svg.select('.voronoi-overlay');
+             const delaunay = d3.Delaunay.from(chartData, d => xScale(d.levelNum), d => yScale(0));
+             const voronoi = delaunay.voronoi([0, 0, width, height]);
+             const tooltip = d3.select('#tooltip');
+             let paths = voronoiGroup.selectAll('path').data(chartData, d => d.level);
+             paths.exit().remove();
+             paths.enter().append('path').attr('fill', 'transparent').style('pointer-events', 'all').merge(paths)
+                 .attr('d', (d, i) => voronoi.renderCell(i))
+                 .on('mouseover', null).on('mouseout', null).on('click', null)
+                 .on('mouseover', (event, d) => {
+                     svg.selectAll('.point').attr('opacity', 0.1);
+                     svg.selectAll('.point').filter(p => p.level === d.level).attr('r', 6).attr('opacity', 1);
+                     let html = `<h4>Layer ${d.levelNum} (${d.level})</h4>`;
+                     lineConfigs.forEach(c => {
+                         const val = d[`${c.type}_${c.metric}`];
+                         const typeL = c.type === 'cls' ? 'CLS' : 'Patch Max';
+                         const metricL = formatMetric(c.metric).split(' ')[0];
+                         const label = `${typeL} ${metricL}`;
+                         const isActive = (c.type === 'cls' && showCls) || (c.type === 'patch' && showPatch);
+                         html += `<div style="color:${isActive ? c.color : '#aaa'}; text-decoration:${isActive ? 'none' : 'line-through'};"> ${label}: ${formatValue(val, c.metric)}</div>`;
+                     });
+                     tooltip.style('opacity', 0.9).html(html).style('left', (event.pageX + 15) + 'px').style('top', (event.pageY - 15) + 'px');
+                 })
+                 .on('mouseout', () => { svg.selectAll('.point').filter(p => p !== null).attr('r', 4).attr('opacity', 1); tooltip.style('opacity', 0); })
+                 .on('click', (event, d) => {
+                      selectedLevel = d.level;
+                      updateHeatmap();
+                      document.getElementById('selected-level').style.display = 'inline-block';
+                      document.getElementById('level-name').textContent = `${d.level} (Layer ${d.levelNum})`;
+                      document.getElementById('heatmap-container').style.display = 'flex';
+                 });
+
+            updateLegend(svg, width, lineConfigs);
+        }
+
+        function updateLegend(svg, chartWidth, lineConfigs) {
+            const activeLines = lineConfigs.filter(config => (config.type === 'cls' && showCls) || (config.type === 'patch' && showPatch));
+            svg.select('.legend').remove();
+            const legend = svg.append('g').attr('class', 'legend').attr('transform', `translate(${chartWidth + 20}, 0)`);
+            let yOffset = 0;
+            activeLines.forEach(config => {
+                const item = legend.append('g').attr('transform', `translate(0, ${yOffset})`);
+                item.append('line').attr('x1', 0).attr('x2', 20).attr('y1', 4).attr('y2', 4).attr('stroke', config.color).attr('stroke-width', 2).attr('stroke-dasharray', config.dash);
+                const metricN = formatMetric(config.metric).split(' ')[0];
+                const typeN = config.type === 'cls' ? "CLS" : "Patch Max";
+                item.append('text').attr('x', 25).attr('y', 8).style('font-size', '11px').text(`${typeN} (${metricN})`);
+                yOffset += 20;
+            });
+        }
+
+        function updateHeatmap() {
+            if (!processedData || !selectedLevel || !processedData.performanceByLevel[selectedLevel]) { return; }
+            const levelData = processedData.performanceByLevel[selectedLevel];
+            const patches = levelData.patches;
+
+            if (!patches || patches.length === 0) {
+                 document.getElementById('heatmap-grid').innerHTML = '<p style="color: #666; font-style: italic;">No patch data available.</p>';
+                 document.getElementById('summary-stats').style.display = 'none';
+                 document.getElementById('heatmap-container').style.display = 'flex';
+                 document.getElementById('heatmap-title').textContent = `Patch Performance - ${formatMetric(selectedHeatmapMetric)} for ${selectedLevel}`;
+                 return;
+            }
+            document.getElementById('summary-stats').style.display = 'block';
+
+            const sortedPatches = [...patches].sort((a, b) => (a.token_index || 0) - (b.token_index || 0));
+            const values = sortedPatches.map(p => p[selectedHeatmapMetric]).filter(v => v !== null && !isNaN(v));
+            const minValue = values.length > 0 ? Math.min(...values) : 0;
+            const maxValue = values.length > 0 ? Math.max(...values) : 1;
+
+            document.getElementById('min-value').textContent = formatValue(minValue, selectedHeatmapMetric);
+            document.getElementById('max-value').textContent = formatValue(maxValue, selectedHeatmapMetric);
+            document.querySelector('.color-scale.vertical .color-label:last-child .color-box').style.backgroundColor = getColorForValue(minValue, minValue, maxValue);
+            document.querySelector('.color-scale.vertical .color-label:first-child .color-box').style.backgroundColor = getColorForValue(maxValue, minValue, maxValue);
+            document.getElementById('heatmap-title').textContent = `Patch Performance - ${formatMetric(selectedHeatmapMetric)} for ${selectedLevel}`;
+
+             const grid = []; let pIdx = 0;
+             for (let i = 0; i < gridSize; i++) {
+                 const row = [];
+                 for (let j = 0; j < gridSize; j++) {
+                      row.push(pIdx < sortedPatches.length ? { index: sortedPatches[pIdx].token_index, value: sortedPatches[pIdx][selectedHeatmapMetric], color: getColorForValue(sortedPatches[pIdx][selectedHeatmapMetric], minValue, maxValue) } : null);
+                      pIdx++;
+                  } grid.push(row);
+             }
+             heatmapData = { grid, minValue, maxValue, levelData };
+             renderHeatmap(grid);
+
+             const clsValue = levelData.cls ? levelData.cls[selectedHeatmapMetric] : null;
+             const patchMaxValue = levelData.patchMax ? levelData.patchMax[selectedHeatmapMetric] : null;
+             document.getElementById('cls-performance').textContent = formatValue(clsValue, selectedHeatmapMetric);
+             document.getElementById('patch-max-performance').textContent = formatValue(patchMaxValue, selectedHeatmapMetric);
+              const allValue = levelData.all ? levelData.all[selectedHeatmapMetric] : null;
+              const allTokensContainer = document.getElementById('all-tokens-container');
+              if (allValue !== null && !isNaN(allValue)) {
+                  document.getElementById('all-tokens-performance').textContent = formatValue(allValue, selectedHeatmapMetric);
+                  allTokensContainer.style.display = 'flex';
+              } else { allTokensContainer.style.display = 'none'; }
+
+            document.getElementById('heatmap-container').style.display = 'flex';
+        }
+
+        function renderHeatmap(grid) {
+            const gridContainer = document.getElementById('heatmap-grid');
+            gridContainer.innerHTML = '';
+            gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, 40px)`;
+            const tooltip = d3.select('#tooltip');
+            const midValue = heatmapData ? (heatmapData.minValue + heatmapData.maxValue) / 2 : 0.5;
+
+            grid.forEach((row) => {
+                row.forEach((cell) => {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.classList.add('heatmap-cell');
+                    if (cell) {
+                        cellDiv.style.backgroundColor = cell.color;
+                        cellDiv.textContent = formatValue(cell.value, selectedHeatmapMetric);
+                        const isLightBg = cell.value > midValue * 0.8 && cell.value < midValue * 1.2;
+                        cellDiv.setAttribute('data-light-bg', isLightBg);
+                        cellDiv.onmouseover = (e) => { tooltip.style('opacity', 0.9).html(`Patch Index: ${cell.index}<br/>${formatMetric(selectedHeatmapMetric)}: ${formatValue(cell.value, selectedHeatmapMetric)}`).style('left', (e.pageX + 10) + 'px').style('top', (e.pageY - 10) + 'px'); };
+                        cellDiv.onmouseout = () => { tooltip.style('opacity', 0); };
+                    } else { cellDiv.style.backgroundColor = '#f0f0f0'; cellDiv.textContent = '-'; }
+                    gridContainer.appendChild(cellDiv);
+                });
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('toggle-cls').addEventListener('change', (e) => { showCls = e.target.checked; updateChart(); });
+            document.getElementById('toggle-patch').addEventListener('change', (e) => { showPatch = e.target.checked; updateChart(); });
+            document.getElementById('heatmap-metric-select').addEventListener('change', (e) => {
+                selectedHeatmapMetric = e.target.value;
+                if (selectedLevel && document.getElementById('heatmap-container').style.display === 'flex') { updateHeatmap(); }
+            });
+            let resizeTimer; window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (chartData && chartData.length > 0) { createLineChart(); if (selectedLevel && document.getElementById('heatmap-container').style.display === 'flex') { } } }, 250); });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadData);
+
+    </script>
+</body>
+</html>
