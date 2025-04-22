@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Comparing ImageNet vs OpenCLIP Training Objectives - A blog post by Markus Frey">
+    <meta name="description" content="[Your Blog Post Description] - A blog post by Markus Frey">
     
-    <title>Comparing ImageNet vs OpenCLIP Training Objectives | Markus Frey</title>
+    <title>[Your Blog Post Title] | Markus Frey</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,7 +76,7 @@
             window.addEventListener('resize', adjustFootnotePosition);
             
             // Initialize triplet visualization
-            initTripletButtons();
+            initTripletCarousel();
         });
         
         function initMobileMenu() {
@@ -107,37 +107,81 @@
             });
         }
         
-        function initTripletButtons() {
-            const revealButtons = document.querySelectorAll('.reveal-solution-btn');
-            
-            revealButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const tripletContainer = this.closest('.triplet-container');
-                    const correctImage = tripletContainer.querySelector('.triplet-image[data-correct="true"]');
+        function initTripletCarousel() {
+            // Initialize all triplet carousels
+            document.querySelectorAll('.triplet-carousel').forEach(carousel => {
+                const slides = carousel.querySelectorAll('.triplet-slide');
+                const indicators = carousel.querySelectorAll('.indicator');
+                const prevBtn = carousel.querySelector('.prev');
+                const nextBtn = carousel.querySelector('.next');
+                const revealBtn = carousel.querySelector('.reveal-btn');
+                const messageDiv = carousel.querySelector('.reveal-message');
+                
+                let currentSlide = 0;
+                let revealed = false;
+                
+                function showSlide(index) {
+                    slides.forEach((slide, i) => {
+                        slide.classList.toggle('active', i === index);
+                    });
+                    indicators.forEach((indicator, i) => {
+                        indicator.classList.toggle('active', i === index);
+                    });
+                    currentSlide = index;
                     
-                    // Reset all images
-                    tripletContainer.querySelectorAll('.triplet-image').forEach(img => {
+                    // Reset reveal state when changing slides
+                    revealed = false;
+                    revealBtn.textContent = 'Reveal Correct Answer';
+                    messageDiv.textContent = '';
+                    slides[currentSlide].querySelectorAll('.triplet-image').forEach(img => {
                         img.classList.remove('correct', 'incorrect');
                     });
-                    
-                    // Highlight correct image
-                    if (correctImage) {
-                        correctImage.classList.add('correct');
-                        tripletContainer.querySelectorAll('.triplet-image:not([data-correct="true"])').forEach(img => {
-                            img.classList.add('incorrect');
+                }
+                
+                function nextSlide() {
+                    showSlide((currentSlide + 1) % slides.length);
+                }
+                
+                function prevSlide() {
+                    showSlide((currentSlide - 1 + slides.length) % slides.length);
+                }
+                
+                function revealAnswer() {
+                    if (!revealed) {
+                        const currentTriplet = slides[currentSlide];
+                        const correctImage = currentTriplet.querySelector('.triplet-image[data-correct="true"]');
+                        const correctMessage = currentTriplet.dataset.message || 'This is the correct match!';
+                        
+                        // Highlight correct and incorrect images
+                        currentTriplet.querySelectorAll('.triplet-image').forEach(img => {
+                            if (img.dataset.correct === "true") {
+                                img.classList.add('correct');
+                            } else {
+                                img.classList.add('incorrect');
+                            }
                         });
-                    }
-                    
-                    // Toggle button text
-                    if (this.textContent === 'Reveal Solution') {
-                        this.textContent = 'Hide Solution';
+                        
+                        // Show message
+                        messageDiv.textContent = correctMessage;
+                        revealBtn.textContent = 'Next Challenge →';
+                        revealed = true;
                     } else {
-                        this.textContent = 'Reveal Solution';
-                        tripletContainer.querySelectorAll('.triplet-image').forEach(img => {
-                            img.classList.remove('correct', 'incorrect');
-                        });
+                        // Move to next slide
+                        nextSlide();
                     }
+                }
+                
+                // Set up event listeners
+                nextBtn.addEventListener('click', nextSlide);
+                prevBtn.addEventListener('click', prevSlide);
+                revealBtn.addEventListener('click', revealAnswer);
+                
+                indicators.forEach((indicator, i) => {
+                    indicator.addEventListener('click', () => showSlide(i));
                 });
+                
+                // Initialize first slide
+                showSlide(0);
             });
         }
     </script>
@@ -190,15 +234,26 @@
             background-color: #f8f8f8;
         }
         
-        .triplet-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 2rem 0;
+        /* Enhanced Triplet Carousel Styles */
+        .triplet-carousel {
+            position: relative;
+            max-width: 1000px;
+            margin: 2rem auto;
             padding: 1rem;
             border: 1px solid #ddd;
             border-radius: 8px;
             background-color: #f8f8f8;
+        }
+        
+        .triplet-slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .triplet-slide.active {
+            display: block;
+            opacity: 1;
         }
         
         .triplet-images {
@@ -206,15 +261,17 @@
             justify-content: space-between;
             width: 100%;
             margin-bottom: 1rem;
+            gap: 1rem;
         }
         
         .triplet-image-wrapper {
             width: 32%;
             position: relative;
-            border: 2px solid transparent;
+            border: 3px solid transparent;
             border-radius: 8px;
             overflow: hidden;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, border-color 0.3s ease;
+            cursor: pointer;
         }
         
         .triplet-image-wrapper:hover {
@@ -225,19 +282,30 @@
             width: 100%;
             height: auto;
             display: block;
-            border-radius: 6px;
+            border-radius: 5px;
+            transition: opacity 0.3s ease;
         }
         
         .triplet-image.correct {
-            box-shadow: 0 0 0 4px #4CAF50;
+            border: 4px solid #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
         }
         
         .triplet-image.incorrect {
-            opacity: 0.7;
+            opacity: 0.5;
+            border: 4px solid #f44336;
         }
         
-        .reveal-solution-btn {
-            padding: 0.5rem 1.5rem;
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .carousel-button {
+            padding: 0.5rem 1rem;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -245,11 +313,44 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: background-color 0.2s ease;
+        }
+        
+        .carousel-button:hover {
+            background-color: #005fa3;
+        }
+        
+        .carousel-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
             margin-top: 1rem;
         }
         
-        .reveal-solution-btn:hover {
-            background-color: #005fa3;
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .indicator.active {
+            background-color: var(--primary-color);
+        }
+        
+        .reveal-message {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #4CAF50;
+            margin-top: 1rem;
+            min-height: 1.5rem;
         }
         
         .placeholder-section {
@@ -302,132 +403,116 @@
     <div class="container">
         <article class="blog-content">
             <header class="blog-header">
-                <h1 class="blog-title">Comparing ImageNet vs OpenCLIP Training Objectives</h1>
-                <div class="blog-meta">April 9, 2025 · 12 min read</div>
+                <h1 class="blog-title">[Your Blog Post Title]</h1>
+                <div class="blog-meta">[Date] · [Reading time] min read</div>
             </header>
             
             <!-- Blog content starts here -->
             <p>
-                The field of computer vision has seen remarkable progress in the last decade, fueled by deep learning approaches
-                and large-scale datasets. While supervised learning on ImageNet has been the dominant paradigm for training
-                vision models, more recent approaches like OpenCLIP have introduced contrastive learning between images and text
-                as an alternative training objective. In this blog post, I'll compare these two training paradigms and analyze
-                their impact on model performance across various metrics.
+                [Introductory paragraph - placeholder for your content]
             </p>
             
             <p>
-                Similar to my <a href="/posts/prayn/clip.html">previous exploration</a> of internal representations in CLIP, 
-                this analysis follows the neuroscience-inspired approach of design, record, analyze, and perturb. However, this time
-                we'll focus on comparing two different training objectives rather than examining spatial representations.
+                [Second paragraph - placeholder for your content]
             </p>
             
             <h3 id="design-section">Design</h3>
             <p>
-                To compare models trained with ImageNet versus OpenCLIP objectives, I'll use a triplet-based evaluation approach.
-                Each triplet consists of an anchor image and two potential matches - one correct (positive) and one incorrect (negative).
-                The model's task is to identify which of the two matches is most similar to the anchor image. This paradigm allows us
-                to evaluate the quality of feature representations learned by different models.
+                [Design section content - placeholder]
             </p>
             
             <p>
-                Below are a few examples of triplets from our evaluation dataset. Can you guess which image in each pair
-                is the correct match for the anchor image? Click the "Reveal Solution" button to see the answer.
+                [Description of triplet evaluation approach - placeholder]
             </p>
             
-            <div class="triplet-container">
-                <h4>Triplet Example 1: Scene Recognition</h4>
-                <div class="triplet-images">
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Anchor+Image" alt="Anchor Image" class="triplet-image">
-                        <p>Anchor: Living Room</p>
-                    </div>
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Match+A" alt="Match A" class="triplet-image" data-correct="true">
-                        <p>Match A: Living Room (Different View)</p>
-                    </div>
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Match+B" alt="Match B" class="triplet-image">
-                        <p>Match B: Kitchen</p>
-                    </div>
-                </div>
-                <button class="reveal-solution-btn">Reveal Solution</button>
-            </div>
-            
-            <div class="triplet-container">
-                <h4>Triplet Example 2: Object Recognition</h4>
-                <div class="triplet-images">
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Anchor+Image" alt="Anchor Image" class="triplet-image">
-                        <p>Anchor: Red Apple</p>
-                    </div>
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Match+A" alt="Match A" class="triplet-image">
-                        <p>Match A: Red Tomato</p>
-                    </div>
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Match+B" alt="Match B" class="triplet-image" data-correct="true">
-                        <p>Match B: Green Apple</p>
+            <!-- Enhanced Triplet Carousel -->
+            <div class="triplet-carousel">
+                <h4 style="text-align: center; margin-bottom: 1.5rem;">Can you identify the correct match?</h4>
+                
+                <!-- Slide 1 -->
+                <div class="triplet-slide" data-message="[Explanation for correct answer 1]">
+                    <div class="triplet-images">
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Anchor+Image+1" alt="Anchor Image" class="triplet-image">
+                            <p style="text-align: center;">Anchor: [Description]</p>
+                        </div>
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Match+A" alt="Match A" class="triplet-image" data-correct="true">
+                            <p style="text-align: center;">Match A: [Description]</p>
+                        </div>
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Match+B" alt="Match B" class="triplet-image">
+                            <p style="text-align: center;">Match B: [Description]</p>
+                        </div>
                     </div>
                 </div>
-                <button class="reveal-solution-btn">Reveal Solution</button>
-            </div>
-            
-            <div class="triplet-container">
-                <h4>Triplet Example 3: Fine-Grained Recognition</h4>
-                <div class="triplet-images">
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Anchor+Image" alt="Anchor Image" class="triplet-image">
-                        <p>Anchor: Golden Retriever</p>
-                    </div>
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Match+A" alt="Match A" class="triplet-image" data-correct="true">
-                        <p>Match A: Golden Retriever Puppy</p>
-                    </div>
-                    <div class="triplet-image-wrapper">
-                        <img src="https://via.placeholder.com/300x200?text=Match+B" alt="Match B" class="triplet-image">
-                        <p>Match B: Yellow Labrador</p>
+                
+                <!-- Slide 2 -->
+                <div class="triplet-slide" data-message="[Explanation for correct answer 2]">
+                    <div class="triplet-images">
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Anchor+Image+2" alt="Anchor Image" class="triplet-image">
+                            <p style="text-align: center;">Anchor: [Description]</p>
+                        </div>
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Match+A" alt="Match A" class="triplet-image">
+                            <p style="text-align: center;">Match A: [Description]</p>
+                        </div>
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Match+B" alt="Match B" class="triplet-image" data-correct="true">
+                            <p style="text-align: center;">Match B: [Description]</p>
+                        </div>
                     </div>
                 </div>
-                <button class="reveal-solution-btn">Reveal Solution</button>
+                
+                <!-- Slide 3 -->
+                <div class="triplet-slide" data-message="[Explanation for correct answer 3]">
+                    <div class="triplet-images">
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Anchor+Image+3" alt="Anchor Image" class="triplet-image">
+                            <p style="text-align: center;">Anchor: [Description]</p>
+                        </div>
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Match+A" alt="Match A" class="triplet-image" data-correct="true">
+                            <p style="text-align: center;">Match A: [Description]</p>
+                        </div>
+                        <div class="triplet-image-wrapper">
+                            <img src="https://via.placeholder.com/300x200?text=Match+B" alt="Match B" class="triplet-image">
+                            <p style="text-align: center;">Match B: [Description]</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal-message"></div>
+                
+                <div class="carousel-controls">
+                    <button class="carousel-button prev">← Previous</button>
+                    <button class="carousel-button reveal-btn">Reveal Correct Answer</button>
+                    <button class="carousel-button next">Next →</button>
+                </div>
+                
+                <div class="carousel-indicators">
+                    <div class="indicator active"></div>
+                    <div class="indicator"></div>
+                    <div class="indicator"></div>
+                </div>
             </div>
             
             <p>
-                These examples illustrate the types of distinctions models need to make in our evaluation. The triplets range from
-                coarse-grained scene recognition to fine-grained object discrimination, testing various aspects of visual understanding.
+                [Explanation of triplet examples - placeholder]
             </p>
             
             <h3 id="record-section">Record</h3>
             <p>
-                For my analysis, I collected performance data from two groups of models:
-            </p>
-            <ul>
-                <li><strong>ImageNet Models</strong>: 92 different models trained with the ImageNet objective, where the goal is to classify images into one of 1,000 categories.</li>
-                <li><strong>OpenCLIP Models</strong>: 180 different models trained with the CLIP contrastive learning objective, where images are matched with corresponding text descriptions.</li>
-            </ul>
-            
-            <p>
-                For each model, I recorded various performance metrics:
-            </p>
-            <ul>
-                <li><strong>Complete Accuracy</strong>: The proportion of triplets where the model correctly identified the matching image.</li>
-                <li><strong>Partial Accuracy</strong>: A more lenient metric that gives partial credit for near-misses.</li>
-                <li><strong>ROC AUC</strong>: Area under the Receiver Operating Characteristic curve, measuring discrimination ability.</li>
-                <li><strong>Same-Scene Similarity</strong>: How similar the model considers images from the same scene.</li>
-                <li><strong>Different-Scene Similarity</strong>: How similar the model considers images from different scenes.</li>
-            </ul>
-            
-            <p>
-                All models were evaluated on the same set of test triplets to ensure a fair comparison. The data collected from
-                these experiments forms the basis for our analysis.
+                [Recording section content - placeholder]
             </p>
             
             <h3 id="analyse-section">Analyse</h3>
             <p>
-                With our performance data collected, we can now visualize and analyze the differences between models trained
-                with ImageNet versus OpenCLIP objectives. The interactive visualization below allows exploration of these differences
-                across multiple performance metrics.
+                [Analysis introduction - placeholder]
             </p>
             
+            <!-- Model Performance Visualization -->
             <div class="visualization-container">
                 <h4>Model Performance Comparison: ImageNet vs OpenCLIP</h4>
                 <div id="visualization-embed">
@@ -436,65 +521,37 @@
             </div>
             
             <p>
-                The visualization reveals several key insights:
-            </p>
-            
-            <ol>
-                <li>
-                    <strong>Overall Performance Advantage</strong>: OpenCLIP models generally outperform ImageNet models across all metrics. 
-                    The average complete accuracy for OpenCLIP models is 0.627 compared to 0.556 for ImageNet models, 
-                    representing a substantial 13% relative improvement.
-                </li>
-                <li>
-                    <strong>Distribution Spread</strong>: While OpenCLIP models show higher average performance, they also exhibit
-                    greater variance, with some models performing exceptionally well and others more modestly.
-                </li>
-                <li>
-                    <strong>Top Performers</strong>: The highest-performing models are predominantly from the OpenCLIP family,
-                    particularly those built on larger architectures like EVA02-E-14 and ViTamin variants.
-                </li>
-                <li>
-                    <strong>Metric Correlation</strong>: Complete accuracy and ROC AUC are strongly correlated across both model types,
-                    suggesting these metrics capture similar aspects of model performance.
-                </li>
-            </ol>
-            
-            <p>
-                These findings suggest that the contrastive learning approach used in OpenCLIP offers significant advantages
-                over traditional supervised learning on ImageNet. The ability to learn from image-text pairs appears to create
-                more robust representations that better generalize to our triplet-based evaluation.
+                [Analysis results discussion - placeholder]
             </p>
             
             <h3 id="perturb-section">Perturb</h3>
             <p>
-                To further understand the differences between these training objectives, I conducted a detailed layer-by-layer
-                analysis of top-performing models from each family. By systematically analyzing performance at different network
-                depths, we can better understand where and how these models differ.
+                [Perturbation analysis introduction - placeholder]
             </p>
             
-            <div class="placeholder-section">
-                <h4>Layer Performance Analysis</h4>
-                <p>Detailed layer-by-layer analysis will be added in a future update.</p>
-                <p>This section will include performance across different network depths, sensitivity analysis, and ablation studies.</p>
+            <!-- Model Detailed Visualization -->
+            <div class="visualization-container">
+                <h4>Detailed Layer-by-Layer Analysis</h4>
+                <div id="detailed-visualization-embed">
+                    <iframe id="model-detailed-iframe" class="visualization-iframe" src="model_detailed.html" title="Detailed Model Analysis"></iframe>
+                </div>
             </div>
             
             <h3 id="outlook-section">Outlook</h3>
             <p>
-                This analysis raises several interesting questions for future exploration:
+                [Outlook section content - placeholder]
             </p>
             
             <ul class="box-list">
-                <li>How do the learned representations differ between ImageNet and OpenCLIP models in terms of feature geometry?</li>
-                <li>Can the strengths of both training objectives be combined to create even more robust models?</li>
-                <li>How do these differences impact performance on downstream tasks beyond triplet recognition?</li>
-                <li>What specific image properties (textures, shapes, semantics) are better captured by each training objective?</li>
-                <li>How do model size and architecture interact with training objective to determine final performance?</li>
+                <li>[Future research question 1 - placeholder]</li>
+                <li>[Future research question 2 - placeholder]</li>
+                <li>[Future research question 3 - placeholder]</li>
+                <li>[Future research question 4 - placeholder]</li>
+                <li>[Future research question 5 - placeholder]</li>
             </ul>
             
             <p>
-                These questions point to a rich area for future research at the intersection of computer vision and machine learning.
-                As foundation models continue to evolve, understanding the impact of different training objectives will become
-                increasingly important for advancing the field.
+                [Concluding paragraph - placeholder]
             </p>
         </article>
     </div>
