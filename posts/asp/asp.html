@@ -147,7 +147,6 @@
                 function revealAnswer(clickedWrapper) {
                     if (!revealed) {
                         const currentTriplet = slides[currentSlide];
-                        const correctMessage = currentTriplet.dataset.message || 'This is the correct match!';
                         
                         // Highlight correct and incorrect images
                         currentTriplet.querySelectorAll('.triplet-image-wrapper').forEach(wrapper => {
@@ -158,8 +157,6 @@
                             }
                         });
                         
-                        // Show message
-                        messageDiv.textContent = correctMessage;
                         revealed = true;
                     }
                 }
@@ -189,6 +186,7 @@
     
     <!-- Custom CSS for blog posts -->
     <style>
+        /* Use CSS variables from style.css */
         .blog-header {
             text-align: center;
             margin: 2rem 0 3rem;
@@ -197,6 +195,7 @@
         .blog-title {
             font-size: 2.2rem;
             margin-bottom: 0.5rem;
+            color: var(--heading-color);
         }
         
         .blog-meta {
@@ -216,16 +215,11 @@
         .blog-content h3 {
             margin-top: 2.5rem;
             padding-bottom: 0.5rem;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--heading-color);
         }
         
-        .blog-image {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 1.5rem auto;
-            border-radius: 5px;
-        }
+        /* Use existing blog-image styling from style.css */
         
         .visualization-container {
             margin: 2rem 0;
@@ -238,9 +232,10 @@
             max-width: 1000px;
             margin: 2rem auto;
             padding: 1rem;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            background-color: #f8f8f8;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .triplet-slide {
@@ -356,24 +351,31 @@
             min-height: 1.5rem;
         }
         
-        .placeholder-section {
-            background-color: #f0f0f0;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            padding: 2rem;
-            margin: 2rem 0;
-            text-align: center;
-            color: #666;
-        }
-        
         /* Iframe for embedded visualization */
         .visualization-iframe {
             width: 100%;
-            height: 800px;
-            border: none;
+            height: 600px;
+            border: 1px solid var(--border-color);
             margin: 0;
             padding: 0;
             display: block;
+            border-radius: 8px;
+            background-color: white;
+        }
+        
+        /* Model performance specific height */
+        #model-performance-iframe {
+            height: 800px;
+        }
+        
+        /* Detailed model specific height - expandable */
+        #model-detailed-iframe {
+            height: 700px;
+            transition: height 0.3s ease-in-out;
+        }
+        
+        #model-detailed-iframe.expanded {
+            height: 1200px;
         }
         
         /* Back to top button */
@@ -381,7 +383,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: rgba(0, 119, 204, 0.8);
+            background-color: var(--primary-color);
             color: white;
             width: 40px;
             height: 40px;
@@ -391,11 +393,48 @@
             align-items: center;
             text-decoration: none;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s, background-color 0.2s;
+        }
+        
+        .back-to-top:hover {
+            background-color: #005fa3;
+            text-decoration: none;
         }
         
         .back-to-top.visible {
             opacity: 1;
+        }
+        
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            .triplet-images {
+                flex-direction: column;
+            }
+            
+            .triplet-image-wrapper {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            
+            .carousel-nav {
+                display: none;
+            }
+            
+            .visualization-iframe {
+                height: 400px;
+            }
+            
+            #model-performance-iframe {
+                height: 500px;
+            }
+            
+            #model-detailed-iframe {
+                height: 500px;
+            }
+            
+            #model-detailed-iframe.expanded {
+                height: 800px;
+            }
         }
     </style>
 </head>
@@ -433,55 +472,46 @@
                 <h4 style="text-align: center; margin-bottom: 1.5rem;">Can you identify the correct match?</h4>
                 
                 <!-- Slide 1 -->
-                <div class="triplet-slide" data-message="[Explanation for correct answer 1]">
+                <div class="triplet-slide">
                     <div class="triplet-images">
                         <div class="triplet-image-wrapper">
                             <img src="./data/triplets/sample1/scene4_0.jpg" alt="Anchor Image" class="triplet-image">
-                            <p style="text-align: center;">Anchor: [Description]</p>
                         </div>
                         <div class="triplet-image-wrapper" data-correct="true">
                             <img src="./data/triplets/sample1/scene7_15.jpg" alt="Match A" class="triplet-image">
-                            <p style="text-align: center;">Match A: [Description]</p>
                         </div>
                         <div class="triplet-image-wrapper">
                             <img src="./data/triplets/sample1/scene4_19.jpg" alt="Match B" class="triplet-image">
-                            <p style="text-align: center;">Match B: [Description]</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Slide 2 -->
-                <div class="triplet-slide" data-message="[Explanation for correct answer 2]">
+                <div class="triplet-slide">
                     <div class="triplet-images">
                         <div class="triplet-image-wrapper">
                             <img src="./data/triplets/sample2/scene1_22.jpg" alt="Anchor Image" class="triplet-image">
-                            <p style="text-align: center;">Anchor: [Description]</p>
                         </div>
                         <div class="triplet-image-wrapper">
                             <img src="./data/triplets/sample2/scene10_05.jpg" alt="Match A" class="triplet-image">
-                            <p style="text-align: center;">Match A: [Description]</p>
                         </div>
                         <div class="triplet-image-wrapper" data-correct="true">
                             <img src="./data/triplets/sample2/scene10_22.jpg" alt="Match B" class="triplet-image">
-                            <p style="text-align: center;">Match B: [Description]</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Slide 3 -->
-                <div class="triplet-slide" data-message="[Explanation for correct answer 3]">
+                <div class="triplet-slide">
                     <div class="triplet-images">
                         <div class="triplet-image-wrapper">
                             <img src="https://via.placeholder.com/300x200?text=Anchor+Image+3" alt="Anchor Image" class="triplet-image">
-                            <p style="text-align: center;">Anchor: [Description]</p>
                         </div>
                         <div class="triplet-image-wrapper" data-correct="true">
                             <img src="https://via.placeholder.com/300x200?text=Match+A" alt="Match A" class="triplet-image">
-                            <p style="text-align: center;">Match A: [Description]</p>
                         </div>
                         <div class="triplet-image-wrapper">
                             <img src="https://via.placeholder.com/300x200?text=Match+B" alt="Match B" class="triplet-image">
-                            <p style="text-align: center;">Match B: [Description]</p>
                         </div>
                     </div>
                 </div>
@@ -573,6 +603,29 @@
                     top: 0,
                     behavior: 'smooth'
                 });
+            });
+            
+            // Add click event for expanding detailed iframe
+            const modelDetailedIframe = document.getElementById('model-detailed-iframe');
+            modelDetailedIframe.addEventListener('load', function() {
+                const iframeDoc = this.contentWindow.document;
+                const heatmapContainer = iframeDoc.getElementById('heatmap-container');
+                
+                if (heatmapContainer) {
+                    // When heatmap becomes visible, expand the iframe
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                const isVisible = heatmapContainer.style.display === 'flex';
+                                if (isVisible) {
+                                    modelDetailedIframe.classList.add('expanded');
+                                }
+                            }
+                        });
+                    });
+                    
+                    observer.observe(heatmapContainer, { attributes: true });
+                }
             });
         });
     </script>
