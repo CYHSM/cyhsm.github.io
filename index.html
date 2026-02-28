@@ -7,49 +7,22 @@
     <meta name="description" content="Markus Frey - Researcher in computer science and cognitive science">
     <title>Markus Frey | Researcher</title>
     
-    <!-- Preconnect to Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
     
-    <!-- Main stylesheet -->
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Load navbar
             fetch('navbar.html')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('navbar-container').innerHTML = data;
-                    
-                    // IMPORTANT: Initialize mobile menu AFTER navbar is loaded
                     initMobileMenu();
                 })
-                .catch(error => {
-                    console.error('Error loading navbar:', error);
-                });
-                
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
+                .catch(error => console.error('Error loading navbar:', error));
             
             // Show/hide publications
             const showMoreBtn = document.getElementById('show-more-pubs');
@@ -69,13 +42,30 @@
                     showLessBtn.style.display = 'none';
                 });
             }
+
+            // Show/hide timeline
+            const showMoreTl = document.getElementById('show-more-timeline');
+            const showLessTl = document.getElementById('show-less-timeline');
+            const moreTimeline = document.getElementById('more-timeline');
+
+            if (showMoreTl && showLessTl && moreTimeline) {
+                showMoreTl.addEventListener('click', function() {
+                    moreTimeline.style.display = 'block';
+                    showMoreTl.style.display = 'none';
+                    showLessTl.style.display = 'block';
+                });
+
+                showLessTl.addEventListener('click', function() {
+                    moreTimeline.style.display = 'none';
+                    showMoreTl.style.display = 'block';
+                    showLessTl.style.display = 'none';
+                });
+            }
         });
         
-        // Function to initialize mobile menu toggle
         function initMobileMenu() {
             const navbarToggle = document.querySelector('.navbar-toggle');
             const navbarLinks = document.querySelector('.navbar-links');
-            
             if (navbarToggle && navbarLinks) {
                 navbarToggle.addEventListener('click', function() {
                     navbarLinks.classList.toggle('active');
@@ -89,179 +79,274 @@
     <div id="navbar-container"></div>
     
     <div class="container">
+        <!-- ==================== ABOUT ==================== -->
         <section class="tab" id="about">
             <h1>About Me</h1>
             <div id="about-container">
                 <img id="profile-image" src="./me.jpeg" alt="Profile Picture of Markus Frey">
                 <div id="about-text">
-                    <p> I am a machine learning researcher with a Ph.D. in computational neuroscience, specializing in models that tackle complex problems at the intersection of AI and neuroscience.
-                        I received a bachelor's degree in computer science from University of Ulm before continuing my studies in cognitive science at University of Tübingen. I did my PhD in computational neuroscience
-                        at the Kavli Institute for Systems Neuroscience & the University College London and a PostDoc with Mackenzie Mathis at EPFL in Switzerland. Currently looking for new opportunities.
+                    <p>
+                        I am a machine learning researcher with a Ph.D. in computational neuroscience, specializing in models that tackle complex problems at the intersection of AI and neuroscience.
+                        I received a bachelor's degree in computer science from the University of Ulm before continuing my studies in cognitive science at the University of Tübingen. I did my PhD in computational neuroscience
+                        at the Kavli Institute for Systems Neuroscience with <a href="https://doellerlab.com/" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Christian Doeller</a> & at University College London with <a href="https://barry-lab.com/" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Caswell Barry</a>, followed by a PostDoc with <a href="https://www.mackenziemathislab.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Mackenzie Mathis</a> at EPFL in Switzerland.
+                    </p>
+                    <p>
+                        I am currently a researcher at the Lamarr Institute & Fraunhofer IAIS, working on improving reasoning in large language models together with <a href="https://lamarr-institute.org/person/ali-mehdi/" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">Mehdi Ali</a>.
+                    </p>
                 </div>
             </div>
         </section>
         
+        <!-- ==================== PUBLICATIONS ==================== -->
         <section class="tab" id="publications">
-            <h2>Publications</h2>
+            <h2>Selected Publications</h2>
             
-            <p>
-                <a href="publications/schneider_2025.pdf" target="_blank">
-                    <strong>Time-series attribution maps with regularized contrastive learning</strong>
-                </a><br>
-                S Schneider, RG Laiz, A Filippova, M Frey, MW Mathis<br>
-                <span class="publication-venue">AISTATS (2025)</span>
-            </p>
-
-            <p>
-                <a href="publications/schneider_2024.pdf" target="_blank">
-                    <strong>Identifiable attribution maps using regularized contrastive learning</strong>
-                </a><br>
-                S Schneider, RG Laiz, M Frey, MW Mathis<br>
-                <span class="publication-venue">NeurIPS (2024)</span>
-            </p>
-
-            <p>
-                <a href="publications/achard_2024.pdf" target="_blank">
-                    <strong>CellSeg3D: self-supervised 3D cell segmentation for fluorescence microscopy</strong>
-                </a><br>
-                C Achard, T Kousi, M Frey, M Vidal, Y Paychère, C Hofmann, A Iqbal, S B Hausmann, S Pagès, MW Mathis<br>
-                <span class="publication-venue">eLife (2024)</span>
-            </p>
-
-            <p>
-                <a href="publications/frey_curbio_2023.pdf" target="_blank">
-                    <strong>NeuroAI: If grid cells are the answer, is path integration the question?</strong>
-                </a><br>
-                M Frey, MW Mathis, A Mathis<br>
-                <span class="publication-venue">Current Biology 33 (5), R190-R192 (2023)</span>
-            </p>
-
-            <p>
-                <a href="publications/frey_2023.pdf" target="_blank">
-                    <strong>Probing neural representations of scene perception in a hippocampally dependent task using artificial neural networks</strong>
-                </a><br>
-                M Frey, CF Doeller, C Barry<br>
-                <span class="publication-venue">CVPR (2023)</span>
-            </p>
-
-            <p>
-                <a href="publications/frey_natneuro_2021.pdf" target="_blank">
-                    <strong>Magnetic resonance-based eye tracking using deep neural networks</strong>
-                </a><br>
-                M Frey, M Nau, CF Doeller<br>
-                <span class="publication-venue">Nature neuroscience 24 (12), 1772-1779 (2021)</span>
-            </p>
-            
-            <!-- Add a "Show More Publications" button -->
-            <button id="show-more-pubs" class="show-more-btn">Show More Publications</button>
-            
-            <div id="more-publications" style="display: none;">
-                <p>
-                    <a href="publications/frey_elife_2021.pdf" target="_blank">
-                        <strong>Interpreting wide-band neural activity using convolutional neural networks</strong>
-                    </a><br>
-                    M Frey, S Tanni, C Perrodin, A O'Leary, M Nau, J Kelly, A Banino, D Bendor, J Lefort, CF Doeller, C Barry<br>
-                    <span class="publication-venue">Elife 10, e66551 (2021)</span>
-                </p>
-                
-                <p>
-                    <a href="publications/nau_encoding_2020.pdf" target="_blank">
-                        <strong>Behavior-dependent directional tuning in the human visual-navigation network</strong>
-                    </a><br>
-                    M Nau, T Navarro Schröder, M Frey, CF Doeller<br>
-                    <span class="publication-venue">Nature communications 11 (1), 3247 (2020)</span>
-                </p>
-                
-                <p>
-                    <a href="publications/frey_tumorseg_2019.pdf" target="_blank">
-                        <strong>Memory efficient brain tumor segmentation using an autoencoder-regularized u-net</strong>
-                    </a><br>
-                    M Frey, M Nau<br>
-                    <span class="publication-venue">Brain lesion: MICCAI (2020)</span>
-                </p>
-                
-                <p>
-                    <a href="publications/coletta_jneuro_2018.pdf" target="_blank">
-                        <strong>Testing the efficacy of single-cell stimulation in biasing presubicular head direction activity</strong>
-                    </a><br>
-                    S Coletta, M Frey, K Nasr, P Preston-Ferrer, A Burgalossi<br>
-                    <span class="publication-venue">Journal of Neuroscience 38 (13), 3287-3302 (2018)</span>
-                </p>
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/schneider_2025.png" alt="Time-series attribution maps">
+                <div class="pub-body">
+                    <a href="publications/schneider_2025.pdf" target="_blank" class="pub-title">Time-series attribution maps with regularized contrastive learning</a>
+                    <div class="pub-authors">S Schneider, RG Laiz, A Filippova, <b>M Frey</b>, MW Mathis</div>
+                    <p class="pub-summary">Here, Steffen developed a method for producing identifiable attribution maps in time-series data using regularized contrastive learning. I applied it to synthetic and real-world grid cell data.</p>
+                    <span class="publication-venue">NeurIPS Workshop (2024) & AISTATS (2025)</span>
+                </div>
             </div>
-            
-            <button id="show-less-pubs" class="show-more-btn" style="display: none;">Show Less</button>
-        </section>
-        
-        <section class="tab" id="projects">
-            <h2>Projects</h2>
-            
-            <div class="project-card">
-                <h3><a href="https://github.com/CYHSM/awesome-neuro-ai-papers" target="_blank">Awesome NeuroAI</a></h3>
-                <p>
-                    A curated list of papers and reviews from the intersection of deep learning and neuroscience.
-                    This resource collects significant contributions to the emerging field of NeuroAI.
-                </p>
-                <div class="project-links">
-                    <a href="https://github.com/CYHSM/awesome-neuro-ai-papers" target="_blank" class="project-link">GitHub Repository</a>
+
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/achard_2024.png" alt="CellSeg3D">
+                <div class="pub-body">
+                    <a href="publications/achard_2024.pdf" target="_blank" class="pub-title">CellSeg3D: self-supervised 3D cell segmentation for fluorescence microscopy</a>
+                    <div class="pub-authors">C Achard, T Kousi, <b>M Frey</b>, M Vidal, Y Paychère, C Hofmann, A Iqbal, S B Hausmann, S Pagès, MW Mathis</div>
+                    <p class="pub-summary">In this study, Cyril built a self-supervised pipeline for segmenting cells in 3D fluorescence microscopy volumes, reducing the need for manual annotations.</p>
+                    <span class="publication-venue">eLife (2024)</span>
+                </div>
+            </div>
+
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/frey_curbio_2023.png" alt="NeuroAI grid cells" style="object-position: -5.5% 0%;">
+                <div class="pub-body">
+                    <a href="publications/frey_curbio_2023.pdf" target="_blank" class="pub-title">NeuroAI: If grid cells are the answer, is path integration the question?</a>
+                    <div class="pub-authors"><b>M Frey</b>, MW Mathis, A Mathis</div>
+                    <p class="pub-summary">Lots of ANNs have shown grid-cell like activity in their hidden units. We ask if this is an artifact of the objective function used. Includes cute animals. </p>
+                    <span class="publication-venue">Current Biology (2023)</span>
+                </div>
+            </div>
+
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/frey_2023.gif" alt="Scene perception neural networks" style="object-position: 0% 10%;">
+                <div class="pub-body">
+                    <a href="publications/frey_2023.pdf" target="_blank" class="pub-title">Probing neural representations of scene perception in a hippocampally dependent task using artificial neural networks</a>
+                    <div class="pub-authors"><b>M Frey</b>, CF Doeller, C Barry</div>
+                    <p class="pub-summary">Here we were trying to build a neural network that simulates the egocentric to allocentric transformation circuit from visual areas to hippocampus. It works and we now also have a benchmark for ANNs that closely follows the four mountains test.</p>
+                    <span class="publication-venue">CVPR (2023)</span>
+                </div>
+            </div>
+
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/frey_natneuro_2021_neg.gif" alt="DeepMReye">
+                <div class="pub-body">
+                    <a href="publications/frey_natneuro_2021.pdf" target="_blank" class="pub-title">Magnetic resonance-based eye tracking using deep neural networks</a>
+                    <div class="pub-authors"><b>M Frey</b>, M Nau, CF Doeller</div>
+                    <p class="pub-summary">After lots of discussions in our lab meetings about the problems with eye-trackers we decided to build a deep learning framework that decodes eye position directly from MRI data.</p>
+                    <span class="publication-venue">Nature neuroscience (2021)</span>
+                </div>
+            </div>
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/frey_elife_2021.png" alt="DeepInsight">
+                <div class="pub-body">
+                    <a href="publications/frey_elife_2021.pdf" target="_blank" class="pub-title">Interpreting wide-band neural activity using convolutional neural networks</a>
+                    <div class="pub-authors"><b>M Frey</b>, S Tanni, C Perrodin, A O'Leary, M Nau, J Kelly, A Banino, D Bendor, J Lefort, CF Doeller, C Barry</div>
+                    <p class="pub-summary">DeepInsight &ndash; nicknamed the automatic John O' Keefe &ndash; decodes behavioral variables from wide-band neural recordings. This gives more objective measures of information content, compared to spike-based methods.</p>
+                    <span class="publication-venue">Elife (2021)</span>
                 </div>
             </div>
             
-            <div class="project-card">
-                <h3><a href="https://github.com/CYHSM/chess-surprise-analysis" target="_blank">The Human Move</a></h3>
-                <p>
-                    Quantifying the psychological impact of chess moves using a simple heuristic based on engine evaluations.
-                    This project explores the cognitive aspects of decision-making in chess.
-                </p>
-                <div class="project-links">
-                    <a href="https://github.com/CYHSM/chess-surprise-analysis" target="_blank" class="project-link">GitHub Repository</a>
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/nau_encoding_2020.png" alt="Directional tuning">
+                <div class="pub-body">
+                    <a href="publications/nau_encoding_2020.pdf" target="_blank" class="pub-title">Behavior-dependent directional tuning in the human visual-navigation network</a>
+                    <div class="pub-authors">M Nau, T Navarro Schröder, <b>M Frey</b>, CF Doeller</div>
+                    <p class="pub-summary">In this study, Matthis showed how directional tuning in the human visual-navigation network shifts depending on behavioral context during spatial navigation.</p>
+                    <span class="publication-venue">Nature communications (2020)</span>
+                </div>
+            </div>
+            
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/frey_tumorseg_2019.png" alt="Tumor segmentation">
+                <div class="pub-body">
+                    <a href="publications/frey_tumorseg_2019.pdf" target="_blank" class="pub-title">Memory efficient brain tumor segmentation using an autoencoder-regularized u-net</a>
+                    <div class="pub-authors"><b>M Frey</b>, M Nau</div>
+                    <p class="pub-summary">We saw this challenge and thought it would be nice to compete. Top 5 in the end but with one of the most efficient implementations and a autoencoder regularization.</p>
+                    <span class="publication-venue">MICCAI (2020)</span>
+                </div>
+            </div>
+            
+            <div class="pub-card">
+                <img class="pub-thumb" src="publications/thumbs/coletta_jneuro_2018.png" alt="Head direction cells" style="object-position: 0% 0%;">
+                <div class="pub-body">
+                    <a href="publications/coletta_jneuro_2018.pdf" target="_blank" class="pub-title">Testing the efficacy of single-cell stimulation in biasing presubicular head direction activity</a>
+                    <div class="pub-authors">S Coletta, <b>M Frey</b>, K Nasr, P Preston-Ferrer, A Burgalossi</div>
+                    <p class="pub-summary">Here we tested a setup which I introduced during my master thesis, to see if stimulating individual neurons can shift the activity of head direction cells in the presubiculum. It can!</p>
+                    <span class="publication-venue">Journal of Neuroscience (2018)</span>
                 </div>
             </div>
         </section>
         
-        <section class="tab" id="posts">
-            <h2>Blog Posts</h2>
+        <!-- ==================== HIGHLIGHTS ==================== -->
+        <section class="tab" id="highlights">
+            <h2>Miscellaneous</h2>
             
-            <div class="post-card">
-                <h3>
-                    <a href="/posts/prayn/clip.html">Exploring spatial representations in Visual Foundation Models</a>
-                </h3>
-                <div class="post-meta">October 23, 2023</div>
-                <p class="post-excerpt">
-                    An exploration of neural representations in large vision models, with a focus on spatially selective cells
-                    that encode parts of the visual field, similar to those found in biological neural networks.
-                </p>
-                <a href="/posts/prayn/clip.html" class="read-more">Read More →</a>
+            <div class="highlights-grid">
+                <div class="highlight-card">
+                    <span class="highlight-type">Project</span>
+                    <h3><a href="https://github.com/CYHSM/awesome-neuro-ai-papers" target="_blank">Awesome NeuroAI</a></h3>
+                    <p>A curated list of papers and reviews from the intersection of deep learning and neuroscience, which I started collecting during my PhD and update from time to time.</p>
+                    <a href="https://github.com/CYHSM/awesome-neuro-ai-papers" target="_blank" class="highlight-link">GitHub Repository →</a>
+                </div>
+
+                <div class="highlight-card">
+                    <span class="highlight-type">Project</span>
+                    <h3><a href="https://github.com/CYHSM/chess-surprise-analysis" target="_blank">The Human Move</a></h3>
+                    <p>Quantifying the psychological impact of chess moves using a simple heuristic based on engine evaluations. As seen on Hackernews.</p>
+                    <a href="https://github.com/CYHSM/chess-surprise-analysis" target="_blank" class="highlight-link">GitHub Repository →</a>
+                </div>
+
+                <div class="highlight-card">
+                    <span class="highlight-type">Blog</span>
+                    <h3><a href="/posts/prayn/clip.html">Exploring spatial representations in Visual Foundation Models</a></h3>
+                    <p>An exploration of neural representations in large vision models, with a focus on spatially selective cells that encode parts of the visual field. </p>
+                    <a href="/posts/prayn/clip.html" class="highlight-link">Read More →</a>
+                </div>
             </div>
         </section>
+
+        <!-- ==================== TIMELINE ==================== -->
+        <section class="tab" id="notes">
+            <h2>Timeline</h2>
+            <p style="color: #666; font-size: 0.95rem; margin-bottom: 0.5rem;">Here are some posts from the last years, rescued from social media before the ecosystem collapsed.</p>
+        </section>
+    </div>
+    
+    <div class="timeline">
+
+        <div class="tl-year"><span>2024</span></div>
+
+        <div class="tl-item left">
+            <div class="tl-card">
+                <div class="tl-date">Jun 2024</div>
+                <img src="notes/media/ottohahn2_june2024.png" alt="Otto Hahn">
+            </div>
+        </div>
+
+        <div class="tl-year"><span>2023</span></div>
+
+        <div class="tl-item right" style="margin-top: -15rem;">
+            <div class="tl-card">
+                <div class="tl-date">Jun 2023</div>
+                <img src="notes/media/deepmreye_streamlit_june2023.gif" alt="DeepMReye">
+            </div>
+        </div>
+
+        <div class="tl-item left" style="margin-top: -6rem;">
+            <div class="tl-card">
+                <div class="tl-date">Apr 2023</div>
+                <img src="notes/media/deepmreye_opensource_apr2023.png" alt="DeepMReye open source">
+            </div>
+        </div>
+
+        <div class="tl-item right" style="margin-top: -5rem;">
+            <div class="tl-card">
+                <div class="tl-date">Mar 2023</div>
+                <img src="notes/media/phdone_march2023.png" alt="PhD done">
+            </div>
+        </div>
+
+        <div id="more-timeline" style="display: none;">
+
+            <div class="tl-item left" style="margin-top: -10rem;">
+                <div class="tl-card">
+                    <div class="tl-date">Mar 2023</div>
+                    <img src="notes/media/phdstart_march2023.png" alt="PhD start">
+                </div>
+            </div>
+
+            <div class="tl-item right" style="margin-top: -7rem;">
+                <div class="tl-card">
+                    <div class="tl-date">Mar 2023</div>
+                    <img src="notes/media/gridcell_dispatch_march2023.gif" alt="Grid cell dispatch">
+                </div>
+            </div>
+
+            <div class="tl-item left" style="margin-top: -9rem;">
+                <div class="tl-card">
+                    <div class="tl-date">Mar 2023</div>
+                    <img src="notes/media/asp_publication_march2023.gif" alt="ASP publication">
+                </div>
+            </div>
+
+            <div class="tl-year"><span>2022</span></div>
+
+            <div class="tl-item right" style="margin-top: -5rem;">
+                <div class="tl-card">
+                    <div class="tl-date">Aug 2022</div>
+                    <img src="notes/media/awesomeneuroai_aug2022.png" alt="Awesome NeuroAI">
+                </div>
+            </div>
+
+            <div class="tl-year"><span>2021</span></div>
+
+            <div class="tl-item left" style="margin-top: -9rem;">
+                <div class="tl-card">
+                    <div class="tl-date">Nov 2021</div>
+                    <img src="notes/media/deepmreye_nov2021.gif" alt="DeepMReye November 2021">
+                </div>
+            </div>
+
+            <div class="tl-year"><span>2020</span></div>
+
+            <div class="tl-item right" style="margin-top: -13rem;">
+                <div class="tl-card">
+                    <div class="tl-date">Jan 2020</div>
+                    <img src="notes/media/activation_function_jan2020.gif" alt="Activation function">
+                </div>
+            </div>
+
+            <div class="tl-year"><span>2019</span></div>
+
+            <div class="tl-item left" style="margin-top: -10rem;">
+                <div class="tl-card">
+                    <div class="tl-date">Dec 2019</div>
+                    <img src="notes/media/deepinsight_deepmind_dec2019.png" alt="DeepInsight DeepMind">
+                </div>
+            </div>
+
+            <div class="tl-item right" style="margin-top: -8rem;">
+                <div class="tl-card">
+                    <div class="tl-date">Dec 2019</div>
+                    <img src="notes/media/deepinsight_deepmind_dec2019.gif" alt="DeepInsight DeepMind">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="tl-show-more-wrap">
+            <button id="show-more-timeline" class="show-more-btn">Show More ↓</button>
+            <button id="show-less-timeline" class="show-more-btn" style="display: none;">Show Less ↑</button>
+        </div>
+
     </div>
     
     <footer>
         <div class="container">
-            <p>© 2025 Markus Frey. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://github.com/CYHSM" target="_blank" rel="noopener noreferrer" title="GitHub">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="https://scholar.google.com/citations?user=BR3NilQAAAAJ&hl=no" target="_blank" rel="noopener noreferrer" title="Google Scholar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+                </a>
+            </div>
+            <p>© Markus Frey. All rights reserved.</p>
         </div>
     </footer>
-    
-    <script>
-        // Show/hide publications
-        document.addEventListener('DOMContentLoaded', function() {
-            const showMoreBtn = document.getElementById('show-more-pubs');
-            const showLessBtn = document.getElementById('show-less-pubs');
-            const morePublications = document.getElementById('more-publications');
-            
-            if (showMoreBtn && showLessBtn && morePublications) {
-                showMoreBtn.addEventListener('click', function() {
-                    morePublications.style.display = 'block';
-                    showMoreBtn.style.display = 'none';
-                    showLessBtn.style.display = 'block';
-                });
-                
-                showLessBtn.addEventListener('click', function() {
-                    morePublications.style.display = 'none';
-                    showMoreBtn.style.display = 'block';
-                    showLessBtn.style.display = 'none';
-                });
-            }
-        });
-    </script>
 </body>
 </html>

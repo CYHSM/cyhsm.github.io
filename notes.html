@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Markus Frey - Notes and thoughts">
+    <title>Markus Frey | Notes</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+    <style>
+        /* Notes page specific styles */
+        .notes-header {
+            padding: 2rem 0 0.5rem;
+        }
+
+        .notes-header p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Filter controls */
+        .notes-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.35rem 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: white;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--font-main);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Timeline spine */
+        .notes-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .notes-timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: var(--border-color);
+        }
+
+        /* Year markers */
+        .year-marker {
+            position: relative;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        .year-marker:first-child {
+            margin-top: 0;
+        }
+
+        .year-marker::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 11px;
+            height: 11px;
+            background: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .year-marker span {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 0.05em;
+        }
+
+        /* Note cards */
+        .note {
+            position: relative;
+            background: white;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .note:hover {
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .note::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 1.5rem;
+            width: 7px;
+            height: 7px;
+            background: #ccc;
+            border-radius: 50%;
+            border: 2px solid var(--light-bg);
+        }
+
+        .note-date {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 0.6rem;
+        }
+
+        .note-text {
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: var(--text-color);
+        }
+
+        .note-text a {
+            color: var(--primary-color);
+            text-decoration: underline;
+            text-decoration-color: rgba(0, 119, 204, 0.3);
+            text-underline-offset: 2px;
+        }
+
+        .note-text a:hover {
+            text-decoration-color: var(--primary-color);
+        }
+
+        /* Media in notes */
+        .note-media {
+            margin-top: 0.8rem;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+
+        .note-media img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .note-media video {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Tags */
+        .note-tags {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .note-tag {
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            color: #888;
+            background: var(--light-bg);
+            padding: 0.15rem 0.5rem;
+            border-radius: 3px;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .notes-timeline {
+                padding-left: 1.5rem;
+            }
+
+            .year-marker::before {
+                left: -1.5rem;
+            }
+
+            .note::before {
+                left: -1.5rem;
+            }
+
+            .notes-timeline::before {
+                left: 3px;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('navbar.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('navbar-container').innerHTML = data;
+                    initMobileMenu();
+                })
+                .catch(error => console.error('Error loading navbar:', error));
+
+            // Filter functionality
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    
+                    // Update active button
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Filter notes
+                    document.querySelectorAll('.note').forEach(note => {
+                        if (filter === 'all' || note.dataset.type === filter) {
+                            note.style.display = '';
+                        } else {
+                            note.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+
+        function initMobileMenu() {
+            const navbarToggle = document.querySelector('.navbar-toggle');
+            const navbarLinks = document.querySelector('.navbar-links');
+            if (navbarToggle && navbarLinks) {
+                navbarToggle.addEventListener('click', function() {
+                    navbarLinks.classList.toggle('active');
+                    navbarToggle.classList.toggle('active');
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <div class="container">
+        <div class="notes-header">
+            <h1>Notes</h1>
+            <p>Thoughts, links, and things I found interesting — rescued from the timeline.</p>
+        </div>
+
+        <div class="notes-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="text">Text</button>
+            <button class="filter-btn" data-filter="image">Images</button>
+            <button class="filter-btn" data-filter="video">Video</button>
+        </div>
+
+        <div class="notes-timeline">
+
+            <!-- ==================== 2024 ==================== -->
+            <div class="year-marker"><span>2024</span></div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Jun 2024</div>
+                <div class="note-media">
+                    <img src="notes/media/ottohahn_june2024.png" alt="Otto Hahn">
+                </div>
+            </div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Jun 2024</div>
+                <div class="note-media">
+                    <img src="notes/media/ottohahn2_june2024.png" alt="Otto Hahn">
+                </div>
+            </div>
+
+            <!-- ==================== 2023 ==================== -->
+            <div class="year-marker"><span>2023</span></div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Jun 2023</div>
+                <div class="note-media">
+                    <img src="notes/media/deepmreye02_june2023.png" alt="DeepMReye">
+                </div>
+            </div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Apr 2023</div>
+                <div class="note-media">
+                    <img src="notes/media/deepmreye_opensource_apr2023.png" alt="DeepMReye open source">
+                </div>
+            </div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Mar 2023</div>
+                <div class="note-media">
+                    <img src="notes/media/phdone_march2023.png" alt="PhD done">
+                </div>
+            </div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Mar 2023</div>
+                <div class="note-media">
+                    <img src="notes/media/phdstart_march2023.png" alt="PhD start">
+                </div>
+            </div>
+
+            <div class="note" data-type="video">
+                <div class="note-date">Mar 2023</div>
+                <div class="note-media">
+                    <img src="notes/media/gridcell_dispatch_march2023.gif" alt="Grid cell dispatch">
+                </div>
+            </div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Mar 2023</div>
+                <div class="note-media">
+                    <img src="notes/media/asp_march2023.png" alt="ASP">
+                </div>
+            </div>
+
+            <div class="note" data-type="video">
+                <div class="note-date">Mar 2023</div>
+                <div class="note-media">
+                    <img src="notes/media/asp_publication_march2023.gif" alt="ASP publication">
+                </div>
+            </div>
+
+            <!-- ==================== 2022 ==================== -->
+            <div class="year-marker"><span>2022</span></div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Aug 2022</div>
+                <div class="note-media">
+                    <img src="notes/media/awesomeneuroai_aug2022.png" alt="Awesome NeuroAI">
+                </div>
+            </div>
+
+            <!-- ==================== 2020 ==================== -->
+            <div class="year-marker"><span>2020</span></div>
+
+            <div class="note" data-type="video">
+                <div class="note-date">Jan 2020</div>
+                <div class="note-media">
+                    <img src="notes/media/activation_function_jan2020.gif" alt="Activation function">
+                </div>
+            </div>
+
+            <!-- ==================== 2019 ==================== -->
+            <div class="year-marker"><span>2019</span></div>
+
+            <div class="note" data-type="video">
+                <div class="note-date">Dec 2019</div>
+                <div class="note-media">
+                    <img src="notes/media/deepinsight_deepmind_dec2019.gif" alt="DeepInsight DeepMind">
+                </div>
+            </div>
+
+            <div class="note" data-type="image">
+                <div class="note-date">Dec 2019</div>
+                <div class="note-media">
+                    <img src="notes/media/deepinsight_deepmind_dec2019.png" alt="DeepInsight DeepMind">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Markus Frey. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

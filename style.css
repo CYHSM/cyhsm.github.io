@@ -44,7 +44,7 @@ a:hover {
     padding: 0 20px;
 }
 
-/* New navbar styles */
+/* Navbar */
 .navbar {
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -111,14 +111,18 @@ a:hover {
     transition: 0.4s;
 }
 
-/* Main content styles */
+/* ==================== SECTIONS ==================== */
 .tab {
-    padding: 1rem 0;
+    padding: 2rem 0 1rem;
     max-width: 900px;
     margin: 0 auto;
 }
 
-/* About me section */
+.tab + .tab {
+    border-top: 1px solid var(--border-color);
+}
+
+/* ==================== ABOUT ==================== */
 #about-container {
     display: flex;
     align-items: flex-start;
@@ -136,18 +140,240 @@ a:hover {
     flex-grow: 1;
 }
 
-/* Publications section */
-#publications p {
-    margin-bottom: 0.8rem;
-    padding-bottom: 0.8rem;
-    border-bottom: 1px solid var(--border-color);
+/* ==================== PUBLICATIONS ==================== */
+.pub-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-#publications p:last-child {
-    border-bottom: none;
+.pub-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
-/* Blog styles */
+.pub-thumb {
+    width: 120px;
+    min-width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    background-color: var(--card-bg);
+}
+
+.pub-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.pub-title {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.35;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.pub-authors {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 0.35rem;
+}
+
+.pub-summary {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.45;
+    margin: 0.3rem 0 0.4rem;
+}
+
+.publication-venue {
+    display: inline-block;
+    background-color: #f0f5ff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* ==================== HIGHLIGHTS ==================== */
+.highlights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.highlight-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.2rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.highlight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.highlight-type {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.highlight-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+}
+
+.highlight-card p {
+    font-size: 0.88rem;
+    color: #555;
+    line-height: 1.5;
+    flex: 1;
+    margin: 0;
+}
+
+.highlight-link {
+    display: inline-block;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.highlight-link:hover {
+    text-decoration: underline;
+}
+
+/* ==================== TIMELINE ==================== */
+.timeline {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem 0 4rem;
+}
+
+/* Center spine */
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border-color);
+    transform: translateX(-50%);
+}
+
+/* Year markers on the spine */
+.tl-year {
+    position: relative;
+    text-align: center;
+    height: 0;
+    overflow: visible;
+    z-index: 5;
+}
+
+.tl-year span {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    background: var(--light-bg);
+    padding: 0.3rem 0.5rem;
+    border-radius: 10px;
+    letter-spacing: 0.05em;
+    writing-mode: vertical-lr;
+}
+
+/* Timeline items */
+.tl-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0;
+}
+
+.tl-item.left {
+    justify-content: flex-start;
+    padding-right: calc(50% + 0.75rem);
+}
+
+.tl-item.right {
+    justify-content: flex-end;
+    padding-left: calc(50% + 0.75rem);
+}
+
+/* Dot on the spine */
+.tl-item::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 1.2rem;
+    width: 7px;
+    height: 7px;
+    background: #ccc;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: none;
+}
+
+.tl-card {
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    width: 100%;
+    z-index: 1;
+}
+
+.tl-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+    transform: translateY(-2px);
+    z-index: 10;
+}
+
+.tl-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.tl-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: #999;
+    padding: 0.5rem 0.8rem 0.4rem;
+}
+
+/* Show more button centered below timeline */
+.tl-show-more-wrap {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding-top: 1.5rem;
+}
+
+/* ==================== BLOG STYLES (kept for post pages) ==================== */
 .blog-image {
     max-width: 100%;
     height: auto;
@@ -184,7 +410,7 @@ a:hover {
     border-radius: 4px;
 }
 
-/* Footnotes - kept original styling */
+/* Footnotes */
 .footnote {
     font-size: smaller;
     vertical-align: super;
@@ -274,7 +500,7 @@ td:not(:first-child):hover {
     margin: 0 10px;
 }
 
-/* Code blocks - kept more consistent with original styling */
+/* Code blocks */
 pre {
     background-color: #f5f5f5;
     border-radius: 5px;
@@ -310,7 +536,7 @@ code {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Scrollbar styling */
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -328,72 +554,6 @@ code {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
-}
-
-/* Publication styles */
-.publication-venue {
-    display: inline-block;
-    background-color: #f0f5ff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    margin-top: 4px;
-}
-
-/* Project and post cards */
-.project-card, .post-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.project-card:hover, .post-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.project-card h3, .post-card h3 {
-    margin-top: 0;
-    margin-bottom: 0.8rem;
-}
-
-.project-links, .post-meta {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-}
-
-.project-link, .read-more {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.4rem 0.8rem;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease;
-}
-
-.project-link:hover, .read-more:hover {
-    background-color: #005fa3;
-    text-decoration: none;
-}
-
-.post-meta {
-    color: #666;
-    margin-bottom: 0.8rem;
-}
-
-.post-excerpt {
-    color: #444;
-    margin-bottom: 1rem;
-}
-
-.read-more {
-    font-size: 0.85rem;
 }
 
 /* Show more/less buttons */
@@ -414,9 +574,9 @@ code {
     background-color: #e6e6e6;
 }
 
-/* Footer */
+/* ==================== FOOTER ==================== */
 footer {
-    margin-top: 3rem;
+    margin-top: 1rem;
     padding: 1.5rem 0;
     background-color: var(--card-bg);
     border-top: 1px solid var(--border-color);
@@ -425,7 +585,26 @@ footer {
     text-align: center;
 }
 
-/* Responsive styles */
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-bottom: 0.6rem;
+}
+
+.footer-links a {
+    color: #888;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* ==================== RESPONSIVE ==================== */
 @media screen and (max-width: 768px) {
     .navbar-container {
         padding: 0.8rem 1rem;
@@ -477,6 +656,55 @@ footer {
     
     .figure-side img {
         max-width: 100%;
+    }
+
+    /* Publications: stack thumb on top on small screens */
+    .pub-card {
+        flex-direction: column;
+    }
+
+    .pub-thumb {
+        width: 100%;
+        height: 140px;
+    }
+
+    /* Highlights: single column */
+    .highlights-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Timeline */
+    .timeline::before {
+        left: 5px;
+    }
+
+    .tl-year {
+        text-align: left;
+        padding-left: 1.5rem;
+        height: auto;
+        margin: 1rem 0 0.5rem;
+    }
+
+    .tl-year span {
+        writing-mode: horizontal-tb;
+    }
+
+    .tl-item {
+        margin-bottom: 1rem;
+        margin-top: 0 !important;
+    }
+
+    .tl-item.left,
+    .tl-item.right {
+        padding-left: 2rem;
+        padding-right: 0;
+        justify-content: flex-start;
+    }
+
+    .tl-item::before {
+        display: block;
+        left: 5px;
+        transform: translateX(-50%);
     }
 }
 
