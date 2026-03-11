@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Genius Tax - A blog post by Markus Frey">
+
+    <title>The Genius Tax | Markus Frey</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap"
+        rel="stylesheet">
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Load navbar
+            fetch('../../navbar.html')
+                .then(response => response.text())
+                .then(data => {
+                    data = data.split('href="/index.html').join('href="../../index.html');
+                    document.getElementById('navbar-container').innerHTML = data;
+                    initMobileMenu();
+                })
+                .catch(error => {
+                    console.error('Error loading navbar:', error);
+                });
+
+            // Adjust footnote positions
+            adjustFootnotePosition();
+            window.addEventListener('resize', adjustFootnotePosition);
+        });
+
+        function initMobileMenu() {
+            const navbarToggle = document.querySelector('.navbar-toggle');
+            const navbarLinks = document.querySelector('.navbar-links');
+            if (navbarToggle && navbarLinks) {
+                navbarToggle.addEventListener('click', function () {
+                    navbarLinks.classList.toggle('active');
+                    navbarToggle.classList.toggle('active');
+                });
+            }
+        }
+
+        function adjustFootnotePosition() {
+            var footnotes = document.querySelectorAll('.footnote-content');
+            var viewportWidth = window.innerWidth;
+
+            footnotes.forEach(function (footnote) {
+                var rect = footnote.getBoundingClientRect();
+
+                if (rect.right > viewportWidth) {
+                    var excessWidth = rect.right - viewportWidth;
+                    footnote.style.left = `calc(50% - ${excessWidth}px - 50px)`;
+                } else if (rect.left < 0) {
+                    footnote.style.left = `calc(50% + ${Math.abs(rect.left)}px + 50px)`;
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+
+    <div class="container">
+        <article class="blog-content">
+            <header class="blog-header">
+                <h1 class="blog-title">The Genius Tax</h1>
+                <div class="blog-meta">March 02, 2026 · 5 min read</div>
+            </header>
+
+            <!-- Blog content starts here -->
+            <p>
+                Having spent considerable time in different labs in academia, I have noticed some interesting behaviors
+                of
+                people in power <span class="footnote">[I]<span class="footnote-content">My experience is mostly from
+                        labs that work in computational neuroscience or machine
+                        learning.</span></span>.
+                You have a principal investigator (PI) that is unquestionably really really smart, one of the best
+                people in their field. They
+                see things before others and have a drive to bring projects to their conclusion. However, some of them
+                can be just awful to work with. For example, they can be dismissive of ideas they don't like, they are
+                harsh in group meetings, and they can make you feel like you are not good enough.
+            </p>
+            <p>
+                And this system is still celebrated, even after all these years and clear indications about the harms
+                this
+                can bring to junior people. There is still this unspoken understanding that this is just how it works.
+                <strong>You are learning from the best, so what did you expect?</strong>
+            </p>
+            <p>
+                For me personally, I expected them to be good at mentoring. Good at instilling confidence and curiosity.
+                Good at bringing students up in a way that makes them want to continue doing science.
+            </p>
+
+            <h3>The argument for brilliance</h3>
+            <p>
+                Now obviously these people are still doing science and still publishing papers. Why? Because the
+                argument for brilliance (seemingly) trumps all others. These people just deliver <em>faster</em> and
+                <em>better</em> than others, because, for one, they can go through students much faster. And I admit
+                this argument isn't crazy, and there are arguably cases in which one person's vision accelerated science
+                by many years.
+            </p>
+            <p>
+                What's much harder to track and quantify though, is the amount of people leaving science due to "genius"
+                PIs? Not because they were not good enough, but because they internalized a message of how science
+                should work from a person who shouldn't share it. Many of these people who left academia were themselves
+                capable of
+                extraordinary work but we will never know what they would have done because they are not around anymore.
+                <strong>In the
+                    same vein as a genius PI can accelerate the field by five years, the three students that leave
+                    their lab can represent a delay of ten.</strong>
+            </p>
+            <p>
+                There is a massive survivorship bias in how stories of science are being shared. We look at the people
+                who made it through these labs and went on to do great science ("The system works. The harshness was
+                formative") but this just looks at the survivors as the others are invisible to the narrative.
+            </p>
+
+            <h3>What to do about it</h3>
+            <p>
+                I had the chance to work with many talented researchers, and I can say that the best
+                environments are intense, but not cruel. Intensity means high standards, honest feedback, and a
+                rewarding
+                intellectual challenge. <strong>Cruelty means making people feel small so the PI can feel big.</strong>
+            </p>
+            <p>
+                We can't just hope that toxic PIs suddenly become better
+                people. We have to change the system's incentives. Here are some ideas:
+            </p>
+            <ul>
+                <li><strong>Tie tenure to human impact:</strong> Feedback from lab members should be formally
+                    evaluated by HR or a neutral committee, and it should directly affect tenure decisions. If a PI
+                    consistently breaks their team, they shouldn't get a lifetime appointment.</li>
+                <li><strong>Exit interviews:</strong> When a student leaves a lab or drops out of a program
+                    entirely, someone outside the department needs to ask why.</li>
+                <li><strong>Make mentorship a metric:</strong> Right now, we promote people based on publications,
+                    grant money, and h-indices. We need to add mentorship quality as a formal, heavily weighted
+                    criterion for hiring and promotion.</li>
+            </ul>
+            <p>
+                I am not arguing against high standards. I am arguing against the lazy idea that cruelty is a necessary
+                byproduct of them. It isn't. <strong>The people who claim otherwise are mostly the ones being cruel, or
+                    the ones
+                    who survived it and now have a psychological need to believe it was necessary</strong>.
+            </p>
+            <p>
+                The best science I've seen comes from environments where people feel safe enough to take intellectual
+                risks, challenged enough to grow, and respected enough to stay. And believe me, these PIs exist.<span
+                    class="footnote">[II]<span class="footnote-content">Just DM me if you want to know
+                        more.</span></span>
+            </p>
+        </article>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Markus Frey. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <a href="#" class="back-to-top" id="back-to-top">↑</a>
+
+    <script>
+        // Back to top button functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const backToTopButton = document.getElementById('back-to-top');
+
+            window.addEventListener('scroll', function () {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('visible');
+                } else {
+                    backToTopButton.classList.remove('visible');
+                }
+            });
+
+            backToTopButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

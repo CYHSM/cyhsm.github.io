@@ -1,54 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Exploring spatial representations in Visual Foundation Models - A blog post by Markus Frey">
-    
+    <meta name="description"
+        content="Exploring spatial representations in Visual Foundation Models - A blog post by Markus Frey">
+
     <title>Exploring spatial representations in Visual Foundation Models | Markus Frey</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap"
+        rel="stylesheet">
+
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="/style.css">
-    
+
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-    
+
     <!-- MathJax for mathematical notation -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
+
     <!-- Syntax highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Load navbar
-            fetch('/navbar.html')
+            fetch('../../navbar.html')
                 .then(response => response.text())
                 .then(data => {
+                    data = data.split('href="/index.html').join('href="../../index.html');
                     document.getElementById('navbar-container').innerHTML = data;
+                    initMobileMenu();
                 })
                 .catch(error => {
                     console.error('Error loading navbar:', error);
                 });
-                
+
             // Initialize syntax highlighting
             hljs.highlightAll();
-            
+
             // Smooth scrolling for anchor links
             document.querySelectorAll('.internal-link').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
+                anchor.addEventListener('click', function (e) {
                     e.preventDefault();
                     const targetId = this.getAttribute('href');
                     const targetElement = document.querySelector(targetId);
-                    
+
                     if (targetElement) {
                         window.scrollTo({
                             top: targetElement.offsetTop - 80,
@@ -57,21 +62,32 @@
                     }
                 });
             });
-            
+
             // Initialize the layer slider functionality
             initLayerSlider();
-            
+
             // Adjust footnote positions
             adjustFootnotePosition();
             window.addEventListener('resize', adjustFootnotePosition);
         });
-        
+
+        function initMobileMenu() {
+            const navbarToggle = document.querySelector('.navbar-toggle');
+            const navbarLinks = document.querySelector('.navbar-links');
+            if (navbarToggle && navbarLinks) {
+                navbarToggle.addEventListener('click', function () {
+                    navbarLinks.classList.toggle('active');
+                    navbarToggle.classList.toggle('active');
+                });
+            }
+        }
+
         function initLayerSlider() {
             const slider = document.getElementById("layerSlider");
             const image = document.getElementById("layerImage");
             const layerNumber = document.getElementById("layerNumber");
             const randomWeightsCheckbox = document.getElementById("randomWeightsCheckbox");
-            
+
             if (slider && image && layerNumber && randomWeightsCheckbox) {
                 // Define a function to update image source
                 function updateImageSource(value) {
@@ -81,27 +97,27 @@
                         image.src = './media/layers/layer_' + value + '.svg';
                     }
                 }
-                
+
                 // Slider input behavior
-                slider.oninput = function() {
+                slider.oninput = function () {
                     updateImageSource(this.value);
                     layerNumber.innerText = 'Layer ' + this.value;
                 }
-                
+
                 // Checkbox click behavior
-                randomWeightsCheckbox.onclick = function() {
+                randomWeightsCheckbox.onclick = function () {
                     updateImageSource(slider.value);
                 }
             }
         }
-        
+
         function adjustFootnotePosition() {
             var footnotes = document.querySelectorAll('.footnote-content');
             var viewportWidth = window.innerWidth;
-            
-            footnotes.forEach(function(footnote) {
+
+            footnotes.forEach(function (footnote) {
                 var rect = footnote.getBoundingClientRect();
-                
+
                 if (rect.right > viewportWidth) {
                     var excessWidth = rect.right - viewportWidth;
                     footnote.style.left = `calc(50% - ${excessWidth}px - 50px)`;
@@ -111,159 +127,50 @@
             });
         }
     </script>
-    
+
     <!-- Custom CSS for blog posts -->
-    <style>
-        .blog-header {
-            text-align: center;
-            margin: 2rem 0 3rem;
-        }
-        
-        .blog-title {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .blog-meta {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .blog-content {
-            font-size: 1.05rem;
-            line-height: 1.7;
-        }
-        
-        .blog-content p {
-            margin-bottom: 1.2rem;
-        }
-        
-        .blog-content h3 {
-            margin-top: 2.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .publication-venue {
-            display: inline-block;
-            background-color: #f0f5ff;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            margin-top: 4px;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-            margin: 1.5rem 0;
-        }
-        
-        /* Original footnote styling */
-        .footnote {
-            font-size: smaller;
-            vertical-align: super;
-            color: #0077cc;
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .footnote-content {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            bottom: 150%;
-            left: 50%;
-            color: rgb(43, 43, 43);
-            transform: translate(-50%, 0);
-            background-color: #f2f2f2;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: smaller;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
-            text-align: center;
-            transition: all 0.3s ease;
-            width: 250px;
-            white-space: normal; 
-            z-index: 1;
-            max-height: 150px; 
-            overflow-y: auto;
-        }
-        
-        .footnote:hover .footnote-content {
-            visibility: visible;
-            opacity: 1;
-        }
-        
-        /* Code styling */
-        pre {
-            background-color: #f5f5f5;
-            border-radius: 5px;
-            padding: 1rem;
-            overflow-x: auto;
-            margin: 1.5rem 0;
-        }
-        
-        code {
-            font-family: 'Courier New', 'Times New Roman', Times, serif;
-        }
-        
-        /* Back to top button */
-        .back-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(0, 119, 204, 0.8);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .back-to-top.visible {
-            opacity: 1;
-        }
-    </style>
 </head>
 
 <body>
     <div id="navbar-container"></div>
-    
+
     <div class="container">
         <article class="blog-content">
             <header class="blog-header">
                 <h1 class="blog-title">Exploring spatial representations in Visual Foundation Models</h1>
                 <div class="blog-meta">October 23, 2023 · 10 min read</div>
             </header>
-            
+
             <!-- Blog content starts here -->
             <p>
-                Recent publications studying the inner workings of foundation models have focused largely on 
-                internal representations of large <i>language</i> models (LLMs). In this short blog post, I will explore neural
+                Recent publications studying the inner workings of foundation models have focused largely on
+                internal representations of large <i>language</i> models (LLMs). In this short blog post, I will explore
+                neural
                 representations in large <i>vision</i> models
-                (<a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al.</a>, 
-                <a href="https://arxiv.org/abs/2304.07193" target="_blank" rel="noopener">Oquab et al.</a>, 
-                <a href="https://ai.meta.com/research/publications/segment-anything/" target="_blank" rel="noopener">Kirillov et al.</a>)
-                with the aim to adress a specific question: Can we find spatially selective cells that encode parts of the visual field, 
+                (<a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al.</a>,
+                <a href="https://arxiv.org/abs/2304.07193" target="_blank" rel="noopener">Oquab et al.</a>,
+                <a href="https://ai.meta.com/research/publications/segment-anything/" target="_blank"
+                    rel="noopener">Kirillov et al.</a>)
+                with the aim to adress a specific question: Can we find spatially selective cells that encode parts of
+                the visual field,
                 akin to the ones found in biological neural networks?
             </p>
-            
+
             <p>
-                For this I first create a dataset that can be used to estimate receptive fields among synthetic neurons (<a href="#design-section" class="internal-link">'design'</a>).
-                We then record neuronal responses across many different artificial layers (<a href="#record-section" class="internal-link">'record'</a>) and visualize and quantify 
-                the responses using methods traditionally employed in neuroscience (<a href="#analyse-section" class="internal-link">'analyse'</a>). Finally, we establish 
-                an 'artificial-causality' by virtually lesioning a subset of spatially selective neurons (<a href="#perturb-section" class="internal-link">'perturb'</a>). 
+                For this I first create a dataset that can be used to estimate receptive fields among synthetic neurons
+                (<a href="#design-section" class="internal-link">'design'</a>).
+                We then record neuronal responses across many different artificial layers (<a href="#record-section"
+                    class="internal-link">'record'</a>) and visualize and quantify
+                the responses using methods traditionally employed in neuroscience (<a href="#analyse-section"
+                    class="internal-link">'analyse'</a>). Finally, we establish
+                an 'artificial-causality' by virtually lesioning a subset of spatially selective neurons (<a
+                    href="#perturb-section" class="internal-link">'perturb'</a>).
             </p>
-            
+
             <p>
-                Each of the aforementioned steps — design, record, analyse, perturb — mirrors techniques used in 
-                neuroscience, with artificial neural networks (ANNs) simplifying at least two (record & perturb) of these procedures dramatically.
+                Each of the aforementioned steps — design, record, analyse, perturb — mirrors techniques used in
+                neuroscience, with artificial neural networks (ANNs) simplifying at least two (record & perturb) of
+                these procedures dramatically.
                 This simplification is made possible by the fact that, in contrast to biological tissues,
                 we have direct access to every single neuron and its connections,
                 enabling an investigation with an unprecedented level of detail.
@@ -271,51 +178,56 @@
 
             <!-- Continue with the rest of your blog content -->
             <!-- ... -->
-            
-            <h3 id="design-section">Design</h3>     
+
+            <h3 id="design-section">Design</h3>
             <p>
-                We first create a dataset containing 3000 stimuli which are randomly 
-                distributed across the visual field. Initially, I had the stimuli take 
-                several geometric forms — square, circle, triangle, rectangle — which were randomly 
+                We first create a dataset containing 3000 stimuli which are randomly
+                distributed across the visual field. Initially, I had the stimuli take
+                several geometric forms — square, circle, triangle, rectangle — which were randomly
                 picked during dataset creation. I ultimately decided against the added complexity of different shapes
-                and used only circles, which are randomly sampled to 
+                and used only circles, which are randomly sampled to
                 have a diameter between 20 and 80 pixels and are positioned to cover the full visual field.
             </p>
             <figure class="figure">
                 <img src="./media/stimuli.svg" alt="Stimuli Visualization" class="blog-image">
                 <figcaption>
                     <strong>Overview of dataset and stimulus locations.</strong>
-                    (Left) Eight representative stimuli of the synthetic dataset that are used to extract neural 
+                    (Left) Eight representative stimuli of the synthetic dataset that are used to extract neural
                     activations across model layers. (Right) For each stimulus the center is visualized (top),
                     accompanied by the composite image formed by taking the average across all stimuli (bottom).
                 </figcaption>
             </figure>
             <p>
                 With these stimuli at hand, we can characterize the responses of neurons within a vision
-                model with respect to each location in the visual field. The model I will be using here is based 
-                on the original CLIP publication of OpenAI, more specifically we will use the <a href="https://github.com/openai/CLIP" target="_blank" rel="noopener">ViT-B/32</a> 
-                architecture<span class="footnote">[I]<span class="footnote-content">These models are trained using a contrastive objective, given pairs of 
-                    images and text. During training, the loss is minimized to make sure that 
-                    each image in the embedding space is close to its paired text. To quantify performance during inference,
-                    people usually measure the similarity between the image and each of the text embeddings using cosine similarity 
-                    with the most similar text being the best match.</span></span>.
+                model with respect to each location in the visual field. The model I will be using here is based
+                on the original CLIP publication of OpenAI, more specifically we will use the <a
+                    href="https://github.com/openai/CLIP" target="_blank" rel="noopener">ViT-B/32</a>
+                architecture<span class="footnote">[I]<span class="footnote-content">These models are trained using a
+                        contrastive objective, given pairs of
+                        images and text. During training, the loss is minimized to make sure that
+                        each image in the embedding space is close to its paired text. To quantify performance during
+                        inference,
+                        people usually measure the similarity between the image and each of the text embeddings using
+                        cosine similarity
+                        with the most similar text being the best match.</span></span>.
             </p>
             <p>
-                To explore whether CLIP can accurately identify the above-created stimuli, 
-                we first need to generate text embeddings to compare with the visual embeddings of these stimuli. 
+                To explore whether CLIP can accurately identify the above-created stimuli,
+                we first need to generate text embeddings to compare with the visual embeddings of these stimuli.
                 Initially, I used three texts: a circle, a square and a triangle.
-                The correct response for all stimuli would 
-                be "a circle", which CLIP gets right 88% of the time (see Table below). 
+                The correct response for all stimuli would
+                be "a circle", which CLIP gets right 88% of the time (see Table below).
                 However, the introduction of another descriptor ("an empty image") complicates the outcome.
-                The performance for "a circle" drops to 
-                9% while the performance for "an empty image" reaches 90%. 
-                This shift suggests that, rather than recognizing the shape, 
+                The performance for "a circle" drops to
+                9% while the performance for "an empty image" reaches 90%.
+                This shift suggests that, rather than recognizing the shape,
                 CLIP reclassifies the stimuli as resembling an empty image.
             </p>
             <p>
-                Initially, I was struggling with this problem for a while as I naively 
-                thought it to be trivial for CLIP to actually classify the circle 
-                correctly. After some experiments with other texts, I noticed that providing additional color information is 
+                Initially, I was struggling with this problem for a while as I naively
+                thought it to be trivial for CLIP to actually classify the circle
+                correctly. After some experiments with other texts, I noticed that providing additional color
+                information is
                 sufficient to have CLIP recognize the correct shape.
                 When using "a black circle" instead of "a circle" the classification performance
                 goes back up to 73%. This reveals how adding seemingly simple details to descriptors
@@ -323,46 +235,50 @@
             </p>
             <table>
                 <tr>
-                  <th></th>
-                  <th>Circle</th>
-                  <th>Square</th>
-                  <th>Triangle</th>
-                  <th>Empty</th>
+                    <th></th>
+                    <th>Circle</th>
+                    <th>Square</th>
+                    <th>Triangle</th>
+                    <th>Empty</th>
                 </tr>
                 <tr>
-                  <td>Shape Only</td>
-                  <td style="font-weight:bold">0.88 ± 0.08</td>
-                  <td>0.05 ± 0.03</td> 
-                  <td>0.07 ± 0.06</td> 
-                  <td>-</td>
+                    <td>Shape Only</td>
+                    <td style="font-weight:bold">0.88 ± 0.08</td>
+                    <td>0.05 ± 0.03</td>
+                    <td>0.07 ± 0.06</td>
+                    <td>-</td>
                 </tr>
                 <tr>
-                  <td>+ Empty</td>
-                  <td>0.09 ± 0.06</td> 
-                  <td>0.00 ± 0.00</td> 
-                  <td>0.00 ± 0.00</td>
-                  <td style="font-weight:bold">0.90 ± 0.06</td>
+                    <td>+ Empty</td>
+                    <td>0.09 ± 0.06</td>
+                    <td>0.00 ± 0.00</td>
+                    <td>0.00 ± 0.00</td>
+                    <td style="font-weight:bold">0.90 ± 0.06</td>
                 </tr>
                 <tr>
-                  <td>+ Color</td>
-                  <td style="font-weight:bold">0.73 ± 0.22</td>
-                  <td>0.06 ± 0.02</td>
-                  <td>0.00 ± 0.00</td>
-                  <td>0.21 ± 0.21</td>
+                    <td>+ Color</td>
+                    <td style="font-weight:bold">0.73 ± 0.22</td>
+                    <td>0.06 ± 0.02</td>
+                    <td>0.00 ± 0.00</td>
+                    <td>0.21 ± 0.21</td>
                 </tr>
             </table>
 
             <h3 id="record-section">Record</h3>
             <p>
-                Having established that CLIP is capable of "seeing" the circle with 
-                consistent accuracy we can proceed with the second step: recording 
-                neural responses. For this we integrate hooks across all model layers, which enables the capturing and storing
-                of responses across various stimuli for subsequent analysis. 
+                Having established that CLIP is capable of "seeing" the circle with
+                consistent accuracy we can proceed with the second step: recording
+                neural responses. For this we integrate hooks across all model layers, which enables the capturing and
+                storing
+                of responses across various stimuli for subsequent analysis.
                 In general, hooks are functions that are triggered after a specified event;
-                here they are triggered during the forward pass and store the layer activations<span class="footnote">[I]<span class="footnote-content">
-                Note that hooks can be also triggered during the backward pass, e.g. to <a href="https://medium.com/the-dl/how-to-use-pytorch-hooks-5041d777f904" target="_blank" rel="noopener">clip the gradients</a></span></span>:
+                here they are triggered during the forward pass and store the layer activations<span
+                    class="footnote">[I]<span class="footnote-content">
+                        Note that hooks can be also triggered during the backward pass, e.g. to <a
+                            href="https://medium.com/the-dl/how-to-use-pytorch-hooks-5041d777f904" target="_blank"
+                            rel="noopener">clip the gradients</a></span></span>:
             </p>
-<pre><code class="language-python">def _register_hook(layer, layer_name, activations):
+            <pre><code class="language-python">def _register_hook(layer, layer_name, activations):
     """
     Register a forward hook to record the layer's activations.
     """
@@ -376,57 +292,74 @@ def _create_activation_hook(layer_name, activations):
         activations[layer_name] = output.detach()
     return hook</code></pre>
             <p>
-                Note that the "recording" phase starkly contrasts with traditional neuroscience 
-                experiments, where single-cell recordings still demand a tremendous 
-                amount of effort. This typically involves skilled 
-                experimentalists doing meticulous work, which encompasses 
-                surgeries, implant placements, management of electrophysiological or 
-                calcium imaging devices, and numerous other complex tasks. 
+                Note that the "recording" phase starkly contrasts with traditional neuroscience
+                experiments, where single-cell recordings still demand a tremendous
+                amount of effort. This typically involves skilled
+                experimentalists doing meticulous work, which encompasses
+                surgeries, implant placements, management of electrophysiological or
+                calcium imaging devices, and numerous other complex tasks.
                 In contrast, ANNs provide us a more efficient pathway: directly accessing
-                and analyzing neural responses, bypassing the invasive procedures inherent to 
-                biological studies and allowing for a more detailed exploration of the synthetic 
+                and analyzing neural responses, bypassing the invasive procedures inherent to
+                biological studies and allowing for a more detailed exploration of the synthetic
                 networks' internal processes.
             </p>
 
             <h3 id="analyse-section">Analyse</h3>
             <p>
-                There are several methods to visualize neuronal responses from a trained neural network, e.g. 
-                by visualizing the filters or activation maps of convolutional layers or by adapting the input 
-                to maximally excite a given neuron within a specific model layer. Here, I will visualize the neuron activation
+                There are several methods to visualize neuronal responses from a trained neural network, e.g.
+                by visualizing the filters or activation maps of convolutional layers or by adapting the input
+                to maximally excite a given neuron within a specific model layer. Here, I will visualize the neuron
+                activation
                 with respect to the spatial location of each stimulus, i.e. a ratemap of the activity of each neuron
-                shown in the image reference frame. As there are millions of parameters within CLIP, I only visualize responses
-                for the vision transformer (63 million parameters) and focus in particular on 
-                the attention layers of specific residual blocks<span class="footnote">[I]<span class="footnote-content">More 
-                    specifically I use layer \(visual.transformer.resblocks.[L].attn\) for each residual block 
-                    \(L\), with \( L ∈ {0, 1,...,11} \).
-                </span></span>. 
-            </p> 
+                shown in the image reference frame. As there are millions of parameters within CLIP, I only visualize
+                responses
+                for the vision transformer (63 million parameters) and focus in particular on
+                the attention layers of specific residual blocks<span class="footnote">[I]<span
+                        class="footnote-content">More
+                        specifically I use layer \(visual.transformer.resblocks.[L].attn\) for each residual block
+                        \(L\), with \( L ∈ {0, 1,...,11} \).
+                    </span></span>.
+            </p>
             <p>
-                Each residual block contains 50x768 parameters, where the first dimension indicates the number of patches (7x7)
-                plus the 'cls' token. In CLIP the 'cls' token is prepended to the sequence of image patches, then processed normally
-                to gather global image information, which is then extracted at the end as the main representation of the entire
-                image<span class="footnote">[I]<span class="footnote-content">To understand the intricacies of the vision transformer
-                it was helpful for me to look more closely at the code,
-                especially where the class embedding is <a href="https://github.com/openai/CLIP/blob/a1d071733d7111c9c014f024669f959182114e33/clip/model.py#L214" target="_blank" rel="noopener">initialized</a>
-                 and <a href="https://github.com/openai/CLIP/blob/a1d071733d7111c9c014f024669f959182114e33/clip/model.py#L227" target="_blank" rel="noopener">used</a>.</span></span>.
-                Below, I plot the ratemaps of the 'cls' token across all 12 residual layers, highlighting the top 5 neurons for 
-                three different scores, which are commonly used in neuroscience to quantify spatially selective cells. The spatial information score 
-                quantifies how well the firing rate of a cell predicts the animal's 
-                location in space, essentially indicating the amount of spatial information that the neuron's activity conveys.
-                The grid score quantifies the degree to which firing fields of a neuron form a periodic grid-like pattern, 
-                akin to grid cells found in the entorhinal cortex<span class="footnote">[I]<span class="footnote-content">I use the grid score here as my initial hypothesis was to find
-                    visual grid cells which encode locations within the image reference frame.</span></span>. 
+                Each residual block contains 50x768 parameters, where the first dimension indicates the number of
+                patches (7x7)
+                plus the 'cls' token. In CLIP the 'cls' token is prepended to the sequence of image patches, then
+                processed normally
+                to gather global image information, which is then extracted at the end as the main representation of the
+                entire
+                image<span class="footnote">[I]<span class="footnote-content">To understand the intricacies of the
+                        vision transformer
+                        it was helpful for me to look more closely at the code,
+                        especially where the class embedding is <a
+                            href="https://github.com/openai/CLIP/blob/a1d071733d7111c9c014f024669f959182114e33/clip/model.py#L214"
+                            target="_blank" rel="noopener">initialized</a>
+                        and <a
+                            href="https://github.com/openai/CLIP/blob/a1d071733d7111c9c014f024669f959182114e33/clip/model.py#L227"
+                            target="_blank" rel="noopener">used</a>.</span></span>.
+                Below, I plot the ratemaps of the 'cls' token across all 12 residual layers, highlighting the top 5
+                neurons for
+                three different scores, which are commonly used in neuroscience to quantify spatially selective cells.
+                The spatial information score
+                quantifies how well the firing rate of a cell predicts the animal's
+                location in space, essentially indicating the amount of spatial information that the neuron's activity
+                conveys.
+                The grid score quantifies the degree to which firing fields of a neuron form a periodic grid-like
+                pattern,
+                akin to grid cells found in the entorhinal cortex<span class="footnote">[I]<span
+                        class="footnote-content">I use the grid score here as my initial hypothesis was to find
+                        visual grid cells which encode locations within the image reference frame.</span></span>.
                 The border score is used to measure the tendency of a neuron to fire selectively near the boundaries
-                of the environment, resembling the function of border cells that provide a sense of environmental borders.
-             </p>  
+                of the environment, resembling the function of border cells that provide a sense of environmental
+                borders.
+            </p>
             <figure class="figure">
                 <div class="slider-container">
                     <img id="layerImage" src="./media/layers/layer_2.svg" alt="Layer Visualization" class="blog-image">
                     <div class="slider-wrapper">
                         <span id="layerNumber">Layer 2</span>
                         <input type="range" min="0" max="11" value="2" class="slider" id="layerSlider">
-                        
-                        <div class="checkbox-container"> 
+
+                        <div class="checkbox-container">
                             <input type="checkbox" id="randomWeightsCheckbox">
                             <label for="randomWeightsCheckbox">Random weights</label>
                         </div>
@@ -436,123 +369,143 @@ def _create_activation_hook(layer_name, activations):
                     <strong>Neuronal activations across different model layers.</strong>
                     For each layer, the ratemaps show the neurons with the highest scores with respect to the spatial
                     information criteria, the grid score and the border score. When toggling the random weights box
-                    all responses are based on a randomly initialized CLIP model, using the initialization schema from the
-                    original paper. 
+                    all responses are based on a randomly initialized CLIP model, using the initialization schema from
+                    the
+                    original paper.
                 </figcaption>
             </figure>
             <p>
-            As shown above, we can see that spatially selective cells persist even in deeper network layers, which implies 
-            that information about the position in screen coordinates is directly encoded in the activity of these neurons.
-            I originally anticipated these deeper layers to show an
-            invariance of the neurons to an object in screen coordinates, as seen in hippocampal structures where 
-            cells (mostly) fire with respect to world coordinates. A more careful examination of these responses 
-            and their distribution across the model layers will be discussed in a future blog post.
+                As shown above, we can see that spatially selective cells persist even in deeper network layers, which
+                implies
+                that information about the position in screen coordinates is directly encoded in the activity of these
+                neurons.
+                I originally anticipated these deeper layers to show an
+                invariance of the neurons to an object in screen coordinates, as seen in hippocampal structures where
+                cells (mostly) fire with respect to world coordinates. A more careful examination of these responses
+                and their distribution across the model layers will be discussed in a future blog post.
             </p>
 
             <h3 id="perturb-section">Perturb</h3>
             <p>
                 Finally, we can assess whether perturbing the layers and the above described
-                 spatially selective cells will change 
-                the model's performance. For this, I first systematically lesion every layer by setting the weights to zero. 
-                In this case we use all layers within each residual block for both the visual and the language transformer, not 
-                just the attention layer as in the ratemaps above. Here, I again quantify 
-                performance based on the model classifying the input stimuli as "a black 
+                spatially selective cells will change
+                the model's performance. For this, I first systematically lesion every layer by setting the weights to
+                zero.
+                In this case we use all layers within each residual block for both the visual and the language
+                transformer, not
+                just the attention layer as in the ratemaps above. Here, I again quantify
+                performance based on the model classifying the input stimuli as "a black
                 circle" or "an empty image".
             </p>
             <figure class="figure">
                 <img src="./media/lesioned_logits.svg" alt="Description of Image" class="blog-image">
                 <figcaption>
                     <strong>Performance of model across lesioned layers.</strong>
-                    Every layer within the model is lesioned by replacing the weights with 0. The performance 
-                    is then quantified with the lesioned model before restoring the model weights. Note that the information flow is not zeroed out completely, due to the 
+                    Every layer within the model is lesioned by replacing the weights with 0. The performance
+                    is then quantified with the lesioned model before restoring the model weights. Note that the
+                    information flow is not zeroed out completely, due to the
                     skip connections within the residual blocks.
                 </figcaption>
             </figure>
             <p>
                 As seen in the plot above, performance varies widely between between different layers.
-                Lesioning certain layers appears to have a more pronounced effect on the model's ability 
-                to classify the stimuli accurately, especially when lesioning visual layers around "Resblock 9" the model 
-                struggles to detect any circle within the image. Lesioning or disrupting the first convolutional layer also
-                has a pronounced effect, suggesting that this layer is essential for capturing basic features and patterns
-                from the input, which are critical for subsequent layers to build upon and make accurate classifications.
+                Lesioning certain layers appears to have a more pronounced effect on the model's ability
+                to classify the stimuli accurately, especially when lesioning visual layers around "Resblock 9" the
+                model
+                struggles to detect any circle within the image. Lesioning or disrupting the first convolutional layer
+                also
+                has a pronounced effect, suggesting that this layer is essential for capturing basic features and
+                patterns
+                from the input, which are critical for subsequent layers to build upon and make accurate
+                classifications.
                 Conversely, some layers, when lesioned, show minimal disruption in performance ("Resblock 11"),
-                suggesting their contributions might be redundant or less critical for this specific task. 
+                suggesting their contributions might be redundant or less critical for this specific task.
             </p>
-        
+
             <p>
-                To find out if the neurons that we identified as encoding information about visual space 
-                also play a causal role in stimulus classification, we can make targeted lesions instead of lesioning layers indiscriminately.
-                From the 
-                lesioning of the layers above, we can infer that the "best lesion" (in the sense 
-                that it resulted in the worst performance) occurred at Layer 9. With a targeted lesion, 
-                we aim to use fewer neurons to achieve the same performance. For this I implemented individual lesions 
-                for every single stimulus. To perform individual lesions, we first obtain ratemaps for each neuron, calculated across all stimuli. 
+                To find out if the neurons that we identified as encoding information about visual space
+                also play a causal role in stimulus classification, we can make targeted lesions instead of lesioning
+                layers indiscriminately.
+                From the
+                lesioning of the layers above, we can infer that the "best lesion" (in the sense
+                that it resulted in the worst performance) occurred at Layer 9. With a targeted lesion,
+                we aim to use fewer neurons to achieve the same performance. For this I implemented individual lesions
+                for every single stimulus. To perform individual lesions, we first obtain ratemaps for each neuron,
+                calculated across all stimuli.
                 We then lesion the neurons which have the highest activity at the central location of the stimulus,
-                and do this across every stimulus in our dataset. 
+                and do this across every stimulus in our dataset.
             </p>
             <figure class="figure-side">
                 <img src="./media/targeted_lesion.svg" alt="Description of Image" class="blog-image">
                 <figcaption>
                     <strong>Artificial Lesions in Residual Block 9.</strong>
-                    The x-axis quantifies the proportion of neurons ablated (n=768 neurons). The y-axis represents the performance 
-                    of the model in categorizing the stimulus as a circle. \( \textit{Random} \) refers to 
+                    The x-axis quantifies the proportion of neurons ablated (n=768 neurons). The y-axis represents the
+                    performance
+                    of the model in categorizing the stimulus as a circle. \( \textit{Random} \) refers to
                     random neuronal lesions within the layer, \( \textit{Targeted} \) denotes lesions applied
-                    to neurons exhibiting heightened activity at the stimulus location, and \( \textit{Targeted}_{\textit{Abs}} \)
+                    to neurons exhibiting heightened activity at the stimulus location, and \(
+                    \textit{Targeted}_{\textit{Abs}} \)
                     pertains to lesions targeting neurons with high or low activity at the stimulus location.
                 </figcaption>
             </figure>
             <p>
-                The targeted lesion shows that the above described spatially selective neurons seem to have a causal influence 
-                on the performance of the model, e.g. when lesioning cells that have a high activity in the lower left part of the image
-                in visual space, the model is unable to detect stimuli with a circle in the lower left part of the image. 
-                Note that the performance deficit is smaller than one might have suspected, 
-                likely due to neurons having multiple fields of high activity instead of a single bump (see ratemaps above in layer 9). 
-            </p>            
-        </article>
-            
-            <h3>Outlook</h3>
-            <p>
-                In this post I explored the inner representations of one of the most widely used 
-                vision models (CLIP) and show that there are spatially selective cells which 
-                are causally linked to the performance of the model. I hope to address some of the open questions 
-                in a future post, where I will be exploring some of
-                the following research questions<span class="footnote">[I]<span class="footnote-content">
-                    Your suggestions or additional questions are very welcome.
-                    Please feel free to discuss it <a href="https://github.com/CYHSM/cyhsm.github.io/issues">here</a>.</span></span>:
+                The targeted lesion shows that the above described spatially selective neurons seem to have a causal
+                influence
+                on the performance of the model, e.g. when lesioning cells that have a high activity in the lower left
+                part of the image
+                in visual space, the model is unable to detect stimuli with a circle in the lower left part of the
+                image.
+                Note that the performance deficit is smaller than one might have suspected,
+                likely due to neurons having multiple fields of high activity instead of a single bump (see ratemaps
+                above in layer 9).
             </p>
-            
-            <ul class="box-list">
-                <li>Why do ratemaps from an untrained model often show border-like responses?</li>
-                <li>How does spatial selectivity arise during model training?</li>
-                <li>How are grid scores & border scores distributed across model layers?</li>
-                <li>Can we find targeted lesions which further drop the performance of the model compared to the ratemap based lesions from above?</li>
-                <li>Can we use targeted lesions to introduce or remove biases from the model?</li>
-            </ul>
+        </article>
+
+        <h3>Outlook</h3>
+        <p>
+            In this post I explored the inner representations of one of the most widely used
+            vision models (CLIP) and show that there are spatially selective cells which
+            are causally linked to the performance of the model. I hope to address some of the open questions
+            in a future post, where I will be exploring some of
+            the following research questions<span class="footnote">[I]<span class="footnote-content">
+                    Your suggestions or additional questions are very welcome.
+                    Please feel free to discuss it <a
+                        href="https://github.com/CYHSM/cyhsm.github.io/issues">here</a>.</span></span>:
+        </p>
+
+        <ul class="box-list">
+            <li>Why do ratemaps from an untrained model often show border-like responses?</li>
+            <li>How does spatial selectivity arise during model training?</li>
+            <li>How are grid scores & border scores distributed across model layers?</li>
+            <li>Can we find targeted lesions which further drop the performance of the model compared to the ratemap
+                based lesions from above?</li>
+            <li>Can we use targeted lesions to introduce or remove biases from the model?</li>
+        </ul>
         </article>
     </div>
-    
+
     <footer>
         <div class="container">
             <p>© 2025 Markus Frey. All rights reserved.</p>
         </div>
     </footer>
-    
+
     <a href="#" class="back-to-top" id="back-to-top">↑</a>
-    
+
     <script>
         // Back to top button functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const backToTopButton = document.getElementById('back-to-top');
-            
-            window.addEventListener('scroll', function() {
+
+            window.addEventListener('scroll', function () {
                 if (window.pageYOffset > 300) {
                     backToTopButton.classList.add('visible');
                 } else {
                     backToTopButton.classList.remove('visible');
                 }
             });
-            
-            backToTopButton.addEventListener('click', function(e) {
+
+            backToTopButton.addEventListener('click', function (e) {
                 e.preventDefault();
                 window.scrollTo({
                     top: 0,
@@ -562,4 +515,5 @@ def _create_activation_hook(layer_name, activations):
         });
     </script>
 </body>
+
 </html>

@@ -474,3 +474,96 @@ pre {
     .tl-item { margin-bottom: 1.5rem; margin-top: 0 !important; }
     .tl-item.left, .tl-item.right { padding-left: 3rem; padding-right: 0; justify-content: flex-start; }
 }
+
+/* Blog Posts Custom CSS */
+.blog-header {
+    text-align: center;
+    margin: 2rem 0 3rem;
+}
+
+.blog-title {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.blog-meta {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.blog-content {
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.blog-content p {
+    margin-bottom: 1.2rem;
+}
+
+.blog-content h3 {
+    margin-top: 2.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+.footnote {
+    font-size: smaller;
+    vertical-align: super;
+    color: var(--primary-color);
+    position: relative;
+    cursor: pointer;
+}
+
+.footnote-content {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 150%;
+    left: 50%;
+    color: rgb(43, 43, 43);
+    transform: translate(-50%, 0);
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: smaller;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+    text-align: center;
+    transition: all 0.3s ease;
+    width: 250px;
+    white-space: normal; 
+    z-index: 1;
+    max-height: 150px; 
+    overflow-y: auto;
+}
+
+.footnote:hover .footnote-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 119, 204, 0.8);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+}
